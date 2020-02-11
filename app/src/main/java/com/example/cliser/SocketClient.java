@@ -19,11 +19,9 @@ public class SocketClient {
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
     private Socket socket;
-    private String address;
 
-    public SocketClient(String address, OnMessageReceived listener) {
-        this.address = address;
-        mMessageListener = listener;
+    public SocketClient() {
+
     }
 
     public void sendMessage(String message) {
@@ -51,10 +49,10 @@ public class SocketClient {
 
     public void run() {
         try {
-            InetAddress serverAddr = InetAddress.getByName(address);
+            //InetAddress serverAddr = InetAddress.getByName(address);todo?
 
             try {
-                socket = new Socket(serverAddr, 0000);//0000=SERVER PORT todo
+                socket = new Socket("serverAddr", 0000);//0000=SERVER PORT todo
                 mRun = true;
                 mBufferOut =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),
@@ -101,7 +99,7 @@ public class SocketClient {
     }
 
 
-    public static void buttonClicked(String btnName, TextView textV){
+    public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
 
             textV.setText("Clicked");

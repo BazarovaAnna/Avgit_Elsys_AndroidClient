@@ -16,11 +16,11 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnClick= (Button) findViewById(R.id.btnClick_view);
         final TextView textV = (TextView) findViewById(R.id.text_view);
-
+        final SocketClient sc=new SocketClient();
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                SocketClient.buttonClicked("butt1", textV);
+                sc.buttonClicked("butt1", textV);
             }
         });
     }
