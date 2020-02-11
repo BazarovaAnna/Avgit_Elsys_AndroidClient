@@ -20,7 +20,7 @@ public class MainActivity extends AppCompatActivity {
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Client.buttonClicked("butt1", textV);
+                SocketClient.buttonClicked("butt1", textV);
             }
         });
     }
