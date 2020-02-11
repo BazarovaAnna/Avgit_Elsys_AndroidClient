@@ -98,6 +98,7 @@ public class SocketClient {
         void onConnected();
     }
 
+    //реализовать шифрование
 
     public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
