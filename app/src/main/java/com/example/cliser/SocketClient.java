@@ -26,6 +26,7 @@ public class SocketClient {
 
     public void sendMessage(String message) {
         if (mBufferOut != null && !mBufferOut.checkError()) {
+            //todo encode
             mBufferOut.println(message);
             mBufferOut.flush();
         }
@@ -94,7 +95,7 @@ public class SocketClient {
 
     public interface OnMessageReceived {
         void messageReceived(String message);
-
+        //todo decode
         void onConnected();
     }
 
