@@ -1,5 +1,7 @@
 package com.example.cliser;
 
+import android.util.Xml;
+
 import com.loopj.android.http.*;
 
 public class PollTask {
@@ -19,8 +21,10 @@ public class PollTask {
         this.Password = aPassword;
 
         HTTPClient = new AsyncHttpClient();
+        HTTPClient.setTimeout(15000);
+
         HTTPResponse = null;
-        CancelTokenSource = new CancellationTokenSource();
+        //CancelTokenSource = new CancellationTokenSource();
         RequestUri = String.format("http://{0}{1}", ServerIP, Protocol.URL);
 
         Connection = false;
@@ -50,8 +54,8 @@ public class PollTask {
     {
         if (HTTPClient != null)
         {
-            HTTPClient.CancelPendingRequests();
-            HTTPClient.Dispose();
+            HTTPClient.cancelAllRequests(false);
+            //HTTPClient.Dispose();
         }
     }
 
@@ -63,14 +67,14 @@ public class PollTask {
 
         if (Math.abs(TimeCorrection.TotalSeconds) > 5)
         {
-            OnMessage("Синхронизация времени", "");
+            SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);
         }
         else
         {
             XContent = Protocol.GetXContent(IncCID(), SID);
         }
-        Content = Encoding.UTF8.GetBytes(XContent.ToString());
+        Content = Xml.Encoding.UTF_8.getBytes(XContent.ToString());
 
         String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
