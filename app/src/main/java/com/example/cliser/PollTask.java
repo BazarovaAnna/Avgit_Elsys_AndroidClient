@@ -1,5 +1,7 @@
 package com.example.cliser;
 
+
+
 public class PollTask {
     String ServerIP,Password;
     boolean Connection;
@@ -17,7 +19,7 @@ public class PollTask {
         HTTPClient = new HttpClient { Timeout = TimeSpan.FromMilliseconds(15000) };
         HTTPResponse = null;
         CancelTokenSource = new CancellationTokenSource();
-        RequestUri = String.format("http://{0}{1}", ServerIP, ElsysSDK2.Protocol.URL);
+        RequestUri = String.format("http://{0}{1}", ServerIP, Protocol.URL);
 
         Connection = false;
         CID = 10000;
@@ -53,22 +55,22 @@ public class PollTask {
 
     private void PrepareRequest()
     {
-        String Nonce = ElsysSDK2.Protocol.GetNonce();
+        String Nonce = Protocol.GetNonce();
         DateTime now = DateTime.Now;
         String CreationTime = (now.ToUniversalTime() + TimeCorrection).ToString("yyyy-MM-ddTHH:mm:ss.fffZ");
 
         if (Math.abs(TimeCorrection.TotalSeconds) > 5)
         {
             OnMessage("Синхронизация времени", "");
-            XContent = ElsysSDK2.Protocol.GetXContent(IncCID(), SID, now);
+            XContent = Protocol.GetXContent(IncCID(), SID, now);
         }
         else
         {
-            XContent = ElsysSDK2.Protocol.GetXContent(IncCID(), SID);
+            XContent = Protocol.GetXContent(IncCID(), SID);
         }
         Content = Encoding.UTF8.GetBytes(XContent.ToString());
 
-        String Digest = ElsysSDK2.GetDigest(Nonce, Password, Content, CreationTime);
+        String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
         HTTPClient.DefaultRequestHeaders.Clear();
         HTTPClient.DefaultRequestHeaders.Add("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));

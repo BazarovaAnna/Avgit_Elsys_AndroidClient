@@ -4,7 +4,7 @@ import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
 
-public class ElsysSDK2 {
+public class Protocol {
     public static String GetDigest(String value, String key) {
         try {
             // Get an hmac_sha1 key from the raw key bytes
