@@ -2,14 +2,6 @@ package com.example.cliser;
 
 import android.widget.TextView;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.net.InetAddress;
-import java.net.Socket;
-
 public class SocketClient {
 
     //реализовать клиентскую часть клиент-серверного приложения

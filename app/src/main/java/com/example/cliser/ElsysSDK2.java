@@ -27,4 +27,7 @@ public class ElsysSDK2 {
             throw new RuntimeException(e);
         }
     }
+    public class Protocol{
+
+    }
 }
