@@ -107,14 +107,16 @@ public class SocketClient {
         void onConnected();
     }
 
-    //реализовать шифрование
-
     public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
 
             textV.setText("Clicked");
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
-            sendMessage("");//todo   need a fix
+            //sendMessage("");//todo   need a fix
+            String textIP="192.168.1.21";
+            String textPassword="12345678";
+            PollTask.Start(textIP, textPassword);
+
         }
     }
 }
