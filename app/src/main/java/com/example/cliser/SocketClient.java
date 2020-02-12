@@ -15,7 +15,6 @@ public class SocketClient {
             textV.setText("Clicked");
             tv=textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
-            //sendMessage("");//todo need a fix
             String textIP="192.168.1.21";
             String textPassword="12345678";
             if(!start){
