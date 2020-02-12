@@ -19,21 +19,29 @@ public class SocketClient {
     private PrintWriter mBufferOut;
     private BufferedReader mBufferIn;
     private Socket socket;
+    private String passwd="12345678";
 
     public SocketClient() {
-
+        /*TODO
+        Порядок действий
+        1) старт
+            передать нужный ip
+            передать нужный пароль (использовать нужный пароль)
+        2) клик
+            http запрос на клик
+         */
     }
 
     public void sendMessage(String message) {
         if (mBufferOut != null && !mBufferOut.checkError()) {
-            //todo encode
-            mBufferOut.println(message);
+            String m=ElsysSDK2.GetDigest(message,passwd);
+            mBufferOut.println(m);
             mBufferOut.flush();
         }
     }
 
     public void stopClient() {
-        sendMessage("CLOSED_CONNECTION");//todo
+        sendMessage("CLOSED_CONNECTION");//todo что отправляем при отсоединении?
 
         mRun = false;
 
@@ -50,17 +58,17 @@ public class SocketClient {
 
     public void run() {
         try {
-            //InetAddress serverAddr = InetAddress.getByName(address);todo?
+            //InetAddress serverAddr = InetAddress.getByName(address);todo? как это работает и что нам тут указывать
 
             try {
-                socket = new Socket("serverAddr", 0000);//0000=SERVER PORT todo
+                socket = new Socket("serverAddr", 0000);//0000=SERVER PORT todo какой у нас порт сервера?
                 mRun = true;
                 mBufferOut =
                         new PrintWriter(new BufferedWriter(new OutputStreamWriter(socket.getOutputStream())),
                                 true);
 
                 mBufferIn = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                sendMessage("LOGIN_NAME"); // todo
+                sendMessage("LOGIN_NAME"); // todo что мы должны отправлять в качестве приветствия во время тройного рукопожатия?
                 mMessageListener.onConnected();
 
                 // ждем ответа
@@ -69,12 +77,13 @@ public class SocketClient {
                         mRun = false;
                     }
 
-                    mServerMessage = mBufferIn.readLine();
+                    mServerMessage = mBufferIn.readLine();//todo расшифровать? это вообще нужно? а он вообще шиврует то что нам отправляет?
 
                     if (mServerMessage != null && mMessageListener != null) {
                         mMessageListener.messageReceived(mServerMessage);
                     }
                 }
+                //todo не понимаю где вставить сам http обмен, по идее здесь где-то но где конкретно хз, и там уже реализовать формирование заголовков и т.п.
             } catch (Exception e) {
             } finally {
                 if (socket != null && socket.isConnected()) {
@@ -95,7 +104,6 @@ public class SocketClient {
 
     public interface OnMessageReceived {
         void messageReceived(String message);
-        //todo decode
         void onConnected();
     }
 
