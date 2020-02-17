@@ -41,6 +41,22 @@ public class SocketClient {
             }
 
         }
+
+        if(btnName.equals("butt2")){
+
+            textV.setText("Clicked");
+            tv=textV;
+            //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
+            String textIP="192.168.1.21";
+            String textPassword="12345678";
+            if(!start){
+                start=true;
+                PollTask pt=new PollTask();
+                pt.Start(textIP, textPassword);
+            }
+            PollTask.sendCommand(1, 1, 1);
+
+        }
     }
 
     /**
