@@ -6,6 +6,7 @@ import com.loopj.android.http.*;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.datatype.Duration;
 
@@ -73,7 +74,7 @@ public class PollTask {
         Date now = new Date();
         String CreationTime = Protocol.DateFormat.format(new Date(now.getTime() + TimeCorrection));
 
-        if (Math.abs(TimeCorrection.getSeconds()) > 5)
+        if (Math.abs(TimeUnit.MILLISECONDS.toSeconds(TimeCorrection)) > 5)
         {
             SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
