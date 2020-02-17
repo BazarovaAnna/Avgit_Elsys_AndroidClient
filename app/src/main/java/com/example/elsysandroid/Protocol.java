@@ -1,21 +1,25 @@
 package com.example.elsysandroid;
 
+import android.util.Base64;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
 import org.apache.commons.codec.binary.Hex;
 
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Random;
 
 public final class Protocol{
     public static final String URL = "/xmlapi/std";
+    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     public static String GetNonce(){
         byte[] nonce = new byte[20];
         Random random = new Random();
         random.nextBytes(nonce);
-        return nonce.toString();
+        return Base64.encodeToString(nonce, Base64.NO_WRAP);
     }
 
     public static String GetDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
@@ -28,26 +32,19 @@ public final class Protocol{
             Mac mac = Mac.getInstance("HmacSHA1");
             mac.init(signingKey);
 
-
             // Compute the hmac on input data bytes
             ByteArrayOutputStream outStream = new ByteArrayOutputStream();
-            outStream.write(aNonce.getBytes());
+            outStream.write(Base64.decode(aNonce, Base64.NO_WRAP));
             outStream.write(aCreationTime.getBytes());
             outStream.write("POST".getBytes());
             outStream.write(Protocol.URL.getBytes());
             outStream.write(aContent);
 
-            byte[] rawHmac = mac.doFinal(outStream.toByteArray());
-
-
-            // Convert raw bytes to Hex
-            byte[] hexBytes = new Hex().encode(rawHmac);
-
             //  Covert array of Hex bytes to a String
-            return new String(hexBytes, "UTF-8");
+            byte[] rawHmac = mac.doFinal(outStream.toByteArray());
+            return Base64.encodeToString(rawHmac, Base64.NO_WRAP);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
-
 }
