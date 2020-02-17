@@ -4,8 +4,8 @@ android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
     defaultConfig {
-        applicationId "com.example.cliser"
-        minSdkVersion 15
+        applicationId "com.example.elsysandroid"
+        minSdkVersion 26
         targetSdkVersion 29
         versionCode 1
         versionName "1.0"
@@ -28,5 +28,5 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'commons-codec:commons-codec:1.14'
     implementation 'com.loopj.android:android-async-http:1.4.5'
-
+    //implementation group: 'org.jboss.jbossas', name: 'jboss-as-jbossmq', version: '5.0.0.CR2'
 }
