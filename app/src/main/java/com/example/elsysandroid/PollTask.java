@@ -2,7 +2,6 @@ package com.example.elsysandroid;
 
 import android.os.AsyncTask;
 import android.util.Xml;
-import com.loopj.android.http.*;
 
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
@@ -11,32 +10,49 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.TimeZone;
 
-
+/**
+ * Класс для клиент-серверного приложения
+ * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @version 1.0
+ */
 public class PollTask extends AsyncTask<String, Void, String> {
+    /** Поля, содержащие IP сервера и пароль для шифрования */
     String ServerIP,Password;
+    /** Поле, показывающее, установлено ли соединение */
     boolean Connection;
+    /** Поля, соответствующие Client ID и Server ID */
     int CID,SID;
+    /** Поле, соответствующее ID команды */
     int CommandID;
+    /** Поля, показывающее, была ли связь разорвана */
     boolean Terminated;
+    /** Поле контента - тела отправляемого сообщения */
     private byte[] Content;
+    /** Поле, содержащее URI запроса */
     String RequestUri;
-    AsyncHttpClient HTTPClient;
-    //HttpResponseMessage HTTPResponse;
 
+    /** Поле - формат серверных даты-времени для конвертации в строку */
     SimpleDateFormat DateFormat;
+    /** Поле - формат локальных даты-времени для конвертации в строку */
     SimpleDateFormat LocalDateFormat;
+    /** Поле - Http соединение с сервером */
     HttpURLConnection urlConnection;
-    long TimeCorrection;
-    private String response;
-    private int responseCode;
+    /** Поле для корректирования локального времени под серверное */
+    long TimeCorrection;//понадобится в реализации HandleResponse
+    /** Поле - ответ сервера в виде строки */
+    private String response;//понадобится в реализации HandleResponse
+    /** Поле - код возврата (200 - ок) */
+    private int responseCode;//понадобится в реализации HandleResponse
 
+    /**
+     * Функция, инициализирующая обмен с сервером и задающая базовые значения
+     * @param aServerIP - IP-адрес сервера
+     * @param aPassword - пароль для шифрования данных
+     */
     public void Start(String aServerIP, String aPassword)
     {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
-
-        HTTPClient = new AsyncHttpClient();
-        HTTPClient.setTimeout(15000);
 
         response = null;
 
@@ -54,10 +70,15 @@ public class PollTask extends AsyncTask<String, Void, String> {
         DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-        //NextPoll(); todo??
+        NextPoll();
 
     }
 
+    /**
+     * Функция, реализующая инкрементацию поля CID в некоторых пределах
+     * @return - CID+1 или 1
+     * @see PollTask#CID
+     */
     private int IncCID() {
         if (CID < 0x40000000)
             CID++;
@@ -66,28 +87,28 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return CID;
     }
 
+    /**
+     * Функция, вызывающая подготовку запроса и отправление его
+     * @see PollTask#PrepareRequest()
+     * @see PollTask#SendRequestAsync()
+     */
     private void NextPoll()
     {
-        if (Terminated)
-        {
-            TerminatePoll();
-        }
-        else
-        {
-            PrepareRequest();
-            SendRequestAsync();
-        }
+        PrepareRequest();
+        SendRequestAsync();
+
     }
 
-    private void TerminatePoll()
-    {
-        if (HTTPClient != null)
-        {
-            HTTPClient.cancelAllRequests(false);
-            //HTTPClient.Dispose();
-        }
-    }
-
+    /**
+     * Функция подготовки запроса
+     * Здесь происходит коррекция времени с сервером, формирование заголовков, формирование и шифрование контента
+     * {@value} now - время начала формирования запроса по клиенту
+     * {@value} CreationTime - время начала формирования запроса по серверу
+     * {@value} XContent - данные в формате xml
+     * {@value} s - строка, которую отправляем (ВРЕМЕННО!!!)
+     * @see Protocol#GetDigest(String, String, byte[], String)
+     * @see Protocol#DateFormat
+     */
     private void PrepareRequest()
     {
         String Nonce = Protocol.GetNonce();
@@ -127,6 +148,15 @@ public class PollTask extends AsyncTask<String, Void, String> {
         }
     }
 
+    /**
+     * Функция, реализующая асинхронное отправление запроса серверу
+     * Здесь получается и расшифровывается ответ от сервера, который затем отправляется на обработчик
+     * Затем клиент  опять переводится в режим подготовки запроса
+     * {@value} responseCode - код возврата
+     * {@value} response - ответ сервера в виде строки
+     * @see PollTask#HandleResponse(int, String)
+     * @see PollTask#NextPoll()
+     */
     private void SendRequestAsync()
     {
         try
@@ -162,9 +192,17 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return null;
     }
 
-    /*private void HandleResponse(int responseCode,String response)
+    /**
+     * Функция парсит ответ сервера из строки в структуру для обработки,
+     * затем в зависимости от результата обработки задает параметры для формирования нового запроса
+     * @param responseCode - код возврата
+     * @param response - ответ сервера в виде строки
+     * @see PollTask#PrepareRequest()
+     * @see PollTask#SendRequestAsync()
+     */
+    private void HandleResponse(int responseCode,String response)
     {
-        boolean connection = false;
+        /*boolean connection = false;
         //todo* response parse from string into some collection that has headers & content as a tree-like structure
         //if (!CancelTokenSource.IsCancellationRequested)
             if (response != null)
@@ -216,7 +254,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
                 SocketClient.chText("Восстановление связи");
             else
                 SocketClient.chText("Потеря связи");
-        }
-    }*/
+        }*/
+    }
 
 }
