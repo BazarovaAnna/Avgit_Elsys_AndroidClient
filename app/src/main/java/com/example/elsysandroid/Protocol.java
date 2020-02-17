@@ -6,10 +6,12 @@ import org.apache.commons.codec.binary.Hex;
 
 
 import java.io.ByteArrayOutputStream;
+import java.text.SimpleDateFormat;
 import java.util.Random;
 
 public final class Protocol{
     public static final String URL = "/xmlapi/std";
+    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     public static String GetNonce(){
         byte[] nonce = new byte[20];
