@@ -9,7 +9,7 @@ import android.widget.TextView;
 
 /**
  * Класс, обрабатывающий андроид-интерфейс.
- * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
 public class MainActivity extends AppCompatActivity {

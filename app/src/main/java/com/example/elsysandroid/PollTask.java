@@ -11,7 +11,7 @@ import java.util.TimeZone;
 
 /**
  * Класс для клиент-серверного обмена
- * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
 public class PollTask extends AsyncTask<String, Void, String> {

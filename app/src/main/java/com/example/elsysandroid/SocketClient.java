@@ -3,7 +3,7 @@ import android.widget.TextView;
 
 /**
  * Класс-буфер между клиент-серверным взаимодействием и андроид-интерфейсом
- * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
 public class SocketClient {
@@ -24,6 +24,7 @@ public class SocketClient {
      * {@value} textIP - IP адрес сервера
      * {@value} textPassword - пароль для шифрования
      * {@value} pt - экземпляр класса для клиент-серверного обмена
+     * @see PollTask#Start(String, String)
      */
     void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
