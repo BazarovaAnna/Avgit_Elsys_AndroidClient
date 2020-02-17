@@ -21,12 +21,25 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
+/**
+ * Класс, реализующий шифрование и кодирование
+ * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @version 1.0
+ */
 public final class Protocol{
+    /** Поле с URL */
     public static final String URL = "/xmlapi/std";
+
+    /** Поле - формат серверных даты-времени для конвертации в строку */
     public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    /** Поле - формат локальных даты-времени для конвертации в строку */
     public static final SimpleDateFormat LocalDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
+    /**
+     * Функция для конвертации xml-элемента в строку
+     * @param element - xml-элемент
+     * @return возвращает полученную строку
+     */
     public static String toString(Element element) {
         try {
             StringWriter sw = new StringWriter();
@@ -44,6 +57,13 @@ public final class Protocol{
         }
     }
 
+    /**
+     * Функция для формирования аргуметнов для запроса в виде xml
+     * @param aCID - ID клиента
+     * @param aSIDResp - ID ответа сервера
+     * @return - xml-элемент, готовый к отправке
+     * @see Protocol#GetXContent(int, int, Date)
+     */
     public static Element GetXContent(int aCID, int aSIDResp) {
         try {
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -71,6 +91,14 @@ public final class Protocol{
         return null;
     }
 
+    /**
+     * Функция для формирования аргуметнов для запроса в виде xml
+     * @param aCID - ID клиента
+     * @param aSIDResp - ID ответа сервера
+     * @param date - скорректированное время
+     * @return - xml-элемент, готовый к отправке
+     * @see Protocol#GetXContent(int, int)
+     */
     public static Element GetXContent(int aCID, int aSIDResp, Date date) {
         Element root = GetXContent(aCID, aSIDResp);
         Element body = (Element) root.getElementsByTagName("Body").item(0);
@@ -90,6 +118,10 @@ public final class Protocol{
         return root;
     }
 
+    /**
+     * Функция для формирования случайной последовательности из 20 байт
+     * @return - случайная последовательность из 20 байт
+     */
     public static String GetNonce(){
         byte[] nonce = new byte[20];
         Random random = new Random();
@@ -97,6 +129,15 @@ public final class Protocol{
         return Base64.encodeToString(nonce, Base64.NO_WRAP);
     }
 
+    /**
+     * Функция, формирующая зашифрованную строку алгоритмом HMAC-SHA-1
+     * @param aNonce - случайная последовательность из 20 байт
+     * @param aPassword - ключ (пароль для шифрования)
+     * @param aContent - последовательность байтов, которую необходимо зашифровать
+     * @param aCreationTime - время начала формирования запроса
+     * @return - зашифрованная строка
+     * @see PollTask
+     */
     public static String GetDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
         try {
             // Get an hmac_sha1 key from the raw key bytes

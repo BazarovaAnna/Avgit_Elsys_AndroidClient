@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.TimeZone;
 
 /**
- * Класс для клиент-серверного приложения
+ * Класс для клиент-серверного обмена
  * @autor ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
@@ -120,10 +120,10 @@ public class PollTask extends AsyncTask<String, Void, String> {
         if (Math.abs(TimeCorrection) > 5)
         {
             SocketClient.chText("Синхронизация времени");
-            XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
+            XContent = Protocol.GetXContent(IncCID(), SID, now);
         }
         else {
-            XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
+            XContent = Protocol.GetXContent(IncCID(), SID);
         }
         try {
 
@@ -182,7 +182,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
             SocketClient.chText(e.getMessage());
             response = null;
         }
-        //HandleResponse(responseCode,response);
+        HandleResponse(responseCode,response);
         NextPoll();
     }
 
@@ -204,7 +204,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
     private void HandleResponse(int responseCode,String response)
     {
         /*boolean connection = false;
-        //todo* response parse from string into some collection that has headers & content as a tree-like structure
+        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like thft
         //if (!CancelTokenSource.IsCancellationRequested)
             if (response != null)
                 if ((responseCode == 200) || (responseCode == 401))
