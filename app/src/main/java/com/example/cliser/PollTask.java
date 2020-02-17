@@ -4,6 +4,8 @@ import android.util.Xml;
 
 import com.loopj.android.http.*;
 
+import java.time.Period;
+
 public class PollTask {
     String ServerIP,Password;
     boolean Connection;
@@ -14,7 +16,7 @@ public class PollTask {
     String RequestUri;
     AsyncHttpClient HTTPClient;
     AsyncHttpResponseHandler HTTPResponse;
-
+    private Period TimeCorrection;
     public void Start(String aServerIP, String aPassword)
     {
         this.ServerIP = aServerIP;
@@ -79,7 +81,7 @@ public class PollTask {
         String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
         HTTPClient.removeAllHeaders();
-        HTTPClient.DefaultRequestHeaders.Add("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
+        HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
         HTTPClient.DefaultRequestHeaders.Date = now.ToUniversalTime();
         HTTPClient.DefaultRequestHeaders.ConnectionClose = true;
     }
@@ -90,7 +92,7 @@ public class PollTask {
         {
             if (XContent != null)
             {
-                WriteToLog(new XElement("Client", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));
+                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));
             }
 
             HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);
@@ -107,12 +109,12 @@ public class PollTask {
     private void HandleResponse()
     {
         boolean connection = false;
-        if (!CancelTokenSource.IsCancellationRequested)
+        //if (!CancelTokenSource.IsCancellationRequested)
             if (HTTPResponse != null)
                 if ((HTTPResponse.StatusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))
                 {
                     connection = true;
-                    if (HTTPResponse.Headers.Date.HasValue)
+                    if (HTTPResponse.getRequestHeaders().Date.HasValue)
                         TimeCorrection = HTTPResponse.Headers.Date.Value - DateTime.Now.ToUniversalTime();
 
                     try
@@ -120,7 +122,7 @@ public class PollTask {
                         XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);
                         if (Content.Root != null)
                         {
-                            WriteToLog(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();
                             foreach (var node in BodyNodes)
                             {
@@ -142,8 +144,7 @@ public class PollTask {
                                 if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
                                 if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
                             }
-                            //totodo здесь нужно проверять наличие требуемого узла, чтобы завершать инициализацию при отсутствии ответов
-                            //CheckInit();
+
                         }
                     }
                     catch(Exception e)
