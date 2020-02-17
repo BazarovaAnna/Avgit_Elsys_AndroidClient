@@ -27,6 +27,8 @@ public class PollTask extends AsyncTask<String, Void, String> {
     SimpleDateFormat LocalDateFormat;
     HttpURLConnection urlConnection;
     long TimeCorrection;
+    private String response;
+    private int responseCode;
 
     public void PollTask(String aServerIP, String aPassword)
     {
@@ -36,7 +38,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
         HTTPClient = new AsyncHttpClient();
         HTTPClient.setTimeout(15000);
 
-        //HTTPResponse = null;
+        response = null;
 
         RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
 
@@ -115,7 +117,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
-            urlConnection.setRequestProperty("Content-Type", "application/json");
+            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
@@ -139,17 +141,17 @@ public class PollTask extends AsyncTask<String, Void, String> {
             dataOutputStream.flush();
             dataOutputStream.close();
 
-            int responseCode = urlConnection.getResponseCode();
-            String response = urlConnection.getResponseMessage();
+            responseCode = urlConnection.getResponseCode();
+            response = urlConnection.getResponseMessage();
 
             urlConnection.disconnect();
         }
         catch(Exception e)
         {
             SocketClient.chText(e.getMessage());
-            //HTTPResponse = null;
+            response = null;
         }
-        //HandleResponse();
+        HandleResponse(responseCode,response);
         NextPoll();
     }
 
@@ -160,20 +162,21 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return null;
     }
 
-    private void HandleResponse()
+    private void HandleResponse(int responseCode,String response)
     {
         boolean connection = false;
+        //todo* response parse from string into some collection that has headers & content as a tree-like structure
         //if (!CancelTokenSource.IsCancellationRequested)
-            if (HTTPResponse != null)//todo HTTP
-                if ((HTTPResponse.statusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))//todo HTTP
+            if (response != null)
+                if ((responseCode == 200) || (responseCode == 401))
                 {
                     connection = true;
-                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP
-                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP
+                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP cannot fix w/o *
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP cannot fix w/o *
 
                     try
                     {
-                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML
+                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML, HTTP cannot fix w/o *
                         if (Content.Root != null)//todo XML
                         {
                             SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
