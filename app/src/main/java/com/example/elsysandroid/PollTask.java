@@ -1,8 +1,7 @@
 package com.example.elsysandroid;
 
 import android.os.AsyncTask;
-import android.util.Xml;
-
+import org.w3c.dom.Element;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -43,6 +42,8 @@ public class PollTask extends AsyncTask<String, Void, String> {
     private String response;//понадобится в реализации HandleResponse
     /** Поле - код возврата (200 - ок) */
     private int responseCode;//понадобится в реализации HandleResponse
+    /** Поле - нода xml кода */
+    Element XContent;
 
     /**
      * Функция, инициализирующая обмен с сервером и задающая базовые значения
@@ -119,10 +120,10 @@ public class PollTask extends AsyncTask<String, Void, String> {
         if (Math.abs(TimeCorrection) > 5)
         {
             SocketClient.chText("Синхронизация времени");
-            //XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
+            XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
         }
         else {
-            //XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
+            XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
         }
         try {
 
@@ -161,7 +162,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
     {
         try
         {
-            //if (XContent != null)//todo XML
+            if (XContent != null)
             {
                 //SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
             }
