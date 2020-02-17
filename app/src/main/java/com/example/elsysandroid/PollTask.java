@@ -4,8 +4,9 @@ import android.util.Xml;
 
 import com.loopj.android.http.*;
 
-import java.time.Instant;
 import java.time.format.DateTimeFormatter;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 import javax.xml.datatype.Duration;
 
@@ -18,8 +19,10 @@ public class PollTask {
     private byte[] Content;
     String RequestUri;
     AsyncHttpClient HTTPClient;
+
     //AsyncHttpResponseHandler HTTPResponse; todo HTTP (this is wrong data type, i guess)
-    Duration TimeCorrection;
+    long TimeCorrection;
+
 
     //Xml;
 
@@ -31,9 +34,9 @@ public class PollTask {
         HTTPClient = new AsyncHttpClient();
         HTTPClient.setTimeout(15000);
 
-        HTTPResponse = null;
+        HTTPResponse = null;//todo HTTP
         //CancelTokenSource = new CancellationTokenSource();
-        RequestUri = String.format("http://{0}{1}", ServerIP, Protocol.URL);
+        RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
 
         Connection = false;
         CID = 10000;
@@ -70,10 +73,10 @@ public class PollTask {
     private void PrepareRequest()
     {
         String Nonce = Protocol.GetNonce();
-        Instant now = Instant.now();
-        String CreationTime = (now.plusSeconds(TimeCorrection.getSeconds())).toString();
+        Date now = new Date();
+        String CreationTime = Protocol.DateFormat.format(new Date(now.getTime() + TimeCorrection));
 
-        if (Math.abs(TimeCorrection.getSeconds()) > 5)
+        if (Math.abs(TimeUnit.MILLISECONDS.toSeconds(TimeCorrection)) > 5)
         {
             SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
@@ -87,7 +90,7 @@ public class PollTask {
         String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
         HTTPClient.removeAllHeaders();
-        HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
+        HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
         HTTPClient.addHeader("Date",now.toString());
         HTTPClient.addHeader("Connection", "Close");
     }
@@ -98,14 +101,14 @@ public class PollTask {
         {
             if (XContent != null)//todo XML
             {//String.format("%s = %d", "joe", 35)
-                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now())), XContent));//todo XML
+                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
             }
 
             HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);//todo HTTP
         }
         catch(Exception e)
         {
-            HTTPResponse = null;
+            HTTPResponse = null;//todo HTTP
         }
         HandleResponse();
         NextPoll();
@@ -116,19 +119,19 @@ public class PollTask {
     {
         boolean connection = false;
         //if (!CancelTokenSource.IsCancellationRequested)
-            if (HTTPResponse != null)
+            if (HTTPResponse != null)//todo HTTP
                 if ((HTTPResponse.statusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))//todo HTTP
                 {
                     connection = true;
                     if (HTTPResponse.Headers.Date.HasValue)//todo HTTP
-                        TimeCorrection = HTTPResponse.Headers.Date.Value - Instant.now();//todo HTTP
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP
 
                     try
                     {
                         XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML
                         if (Content.Root != null)//todo XML
                         {
-                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now())), Content.Root));//todo  XML
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
                             foreach (var node in BodyNodes)//todo JAVA
                             {
