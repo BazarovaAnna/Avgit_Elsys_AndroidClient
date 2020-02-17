@@ -1,19 +1,73 @@
 package com.example.elsysandroid;
 
 import android.util.Base64;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
 import java.io.ByteArrayOutputStream;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 import java.util.Random;
-import java.util.TimeZone;
+
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
-
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 public final class Protocol{
     public static final String URL = "/xmlapi/std";
     public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+
+    public static String toString(Element element) {
+        try {
+            StringWriter sw = new StringWriter();
+            TransformerFactory tf = TransformerFactory.newInstance();
+            Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "yes");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+
+            transformer.transform(new DOMSource(element), new StreamResult(sw));
+            return sw.toString();
+        } catch (Exception ex) {
+            throw new RuntimeException("Error converting to String", ex);
+        }
+    }
+
+    public static Element GetXContent(int aCID, int aSIDResp) {
+        try {
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
+
+            Element root = document.createElement("Envelope");
+            document.appendChild(root);
+
+            Element body = document.createElement("Body");
+            root.appendChild(body);
+
+            Element cid = document.createElement("CID");
+            cid.appendChild(document.createTextNode(Integer.toString(aCID)));
+            body.appendChild(cid);
+
+            Element sid = document.createElement("SID");
+            sid.appendChild(document.createTextNode(Integer.toString(aSIDResp)));
+            body.appendChild(sid);
+
+            return root;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 
     public static String GetNonce(){
         byte[] nonce = new byte[20];
