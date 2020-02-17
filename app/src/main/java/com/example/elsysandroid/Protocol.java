@@ -19,7 +19,7 @@ public final class Protocol{
         byte[] nonce = new byte[20];
         Random random = new Random();
         random.nextBytes(nonce);
-        return nonce.toString();
+        return Base64.encodeToString(nonce, Base64.NO_WRAP);
     }
 
     public static String GetDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
@@ -40,7 +40,7 @@ public final class Protocol{
             outStream.write(Protocol.URL.getBytes());
             outStream.write(aContent);
 
-            //  Covert array of bytes to a String
+            //  Covert array of Hex bytes to a String
             byte[] rawHmac = mac.doFinal(outStream.toByteArray());
             return Base64.encodeToString(rawHmac, Base64.NO_WRAP);
         } catch (Exception e) {
