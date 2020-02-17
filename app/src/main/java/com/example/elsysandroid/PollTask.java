@@ -5,6 +5,7 @@ import android.util.Xml;
 import com.loopj.android.http.*;
 
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
 
 import javax.xml.datatype.Duration;
 
@@ -96,8 +97,8 @@ public class PollTask {
         try
         {
             if (XContent != null)//todo XML
-            {
-                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Instant.now().toString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));//todo XML, DATETIME
+            {//String.format("%s = %d", "joe", 35)
+                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now())), XContent));//todo XML
             }
 
             HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);//todo HTTP
@@ -120,14 +121,14 @@ public class PollTask {
                 {
                     connection = true;
                     if (HTTPResponse.Headers.Date.HasValue)//todo HTTP
-                        TimeCorrection = HTTPResponse.Headers.Date.Value - DateTime.Now.ToUniversalTime();//todo HTTP, DATETIME
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - Instant.now();//todo HTTP
 
                     try
                     {
                         XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML
                         if (Content.Root != null)//todo XML
                         {
-                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));//todo  XML DATETIME
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss").format(Instant.now())), Content.Root));//todo  XML
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
                             foreach (var node in BodyNodes)//todo JAVA
                             {
@@ -149,7 +150,7 @@ public class PollTask {
                                 if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
                                 if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
                             }
-                            
+
                         }
                     }
                     catch(Exception e)
