@@ -31,6 +31,9 @@ public class MainActivity extends AppCompatActivity {
         Button btnClick= (Button) findViewById(R.id.btnClick_view);
         final TextView textV = (TextView) findViewById(R.id.text_view);
 
+        Button btnImp = (Button) findViewById(R.id.btnClick_imp);
+
+
         final SocketClient sc=new SocketClient();
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -38,5 +41,13 @@ public class MainActivity extends AppCompatActivity {
                 sc.buttonClicked("butt1", textV);
             }
         });
+
+        btnImp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sc.buttonClicked("butt2", textV);
+            }
+        });
+
     }
 }

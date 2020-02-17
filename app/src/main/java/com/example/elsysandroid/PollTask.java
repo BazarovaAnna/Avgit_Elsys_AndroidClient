@@ -193,6 +193,19 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return null;
     }
 
+
+    public static void sendCommand(int aID, int aDevType, int aCommand){
+
+    }//todo FIRST
+
+    /*public void sendCommand(int aID, int aDevType, int aCommand, Date aDate){
+
+    }*todo
+
+
+
+
+
     /**
      * Функция парсит ответ сервера из строки в структуру для обработки,
      * затем в зависимости от результата обработки задает параметры для формирования нового запроса
@@ -212,7 +225,6 @@ public class PollTask extends AsyncTask<String, Void, String> {
                     connection = true;
                     if (HTTPResponse.Headers.Date.HasValue)//todo HTTP cannot fix w/o *
                         TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP cannot fix w/o *
-
                     try
                     {
                         XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML, HTTP cannot fix w/o *
@@ -246,11 +258,9 @@ public class PollTask extends AsyncTask<String, Void, String> {
                     {
                     }
                 }
-
         if (Connection != connection)
         {
             Connection = connection;
-
             if (Connection)
                 SocketClient.chText("Восстановление связи");
             else

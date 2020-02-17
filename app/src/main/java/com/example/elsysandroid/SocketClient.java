@@ -24,7 +24,6 @@ public class SocketClient {
      * {@value} textIP - IP адрес сервера
      * {@value} textPassword - пароль для шифрования
      * {@value} pt - экземпляр класса для клиент-серверного обмена
-     * @see PollTask#Start(String, String)
      */
     void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
@@ -39,6 +38,22 @@ public class SocketClient {
                 PollTask pt=new PollTask();
                 pt.Start(textIP, textPassword);
             }
+
+        }
+
+        if(btnName.equals("butt2")){
+
+            textV.setText("Clicked");
+            tv=textV;
+            //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
+            String textIP="192.168.1.21";
+            String textPassword="12345678";
+            if(!start){
+                start=true;
+                PollTask pt=new PollTask();
+                pt.Start(textIP, textPassword);
+            }
+            PollTask.sendCommand(1, 1, 1);
 
         }
     }
