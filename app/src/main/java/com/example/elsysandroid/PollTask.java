@@ -86,7 +86,7 @@ public class PollTask {
         String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
         HTTPClient.removeAllHeaders();
-        HTTPClient.DefaultRequestHeaders.Add("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
+        HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
         HTTPClient.DefaultRequestHeaders.Date = now.ToUniversalTime();
         HTTPClient.DefaultRequestHeaders.ConnectionClose = true;
     }
