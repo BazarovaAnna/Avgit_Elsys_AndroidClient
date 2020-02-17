@@ -1,14 +1,18 @@
 package com.example.elsysandroid;
 
+import android.os.AsyncTask;
 import android.util.Xml;
 import com.loopj.android.http.*;
 
+import java.io.DataOutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.concurrent.TimeUnit;
-import oracle.iot.message.HttpResponseMessage;
+import java.util.TimeZone;
 
 
-public class PollTask {
+public class PollTask extends AsyncTask<String, Void, String> {
     String ServerIP,Password;
     boolean Connection;
     int CID,SID;
@@ -17,14 +21,14 @@ public class PollTask {
     private byte[] Content;
     String RequestUri;
     AsyncHttpClient HTTPClient;
+    //HttpResponseMessage HTTPResponse;
 
-    HttpResponseMessage HTTPResponse;
+    SimpleDateFormat DateFormat;
+    SimpleDateFormat LocalDateFormat;
+    HttpURLConnection urlConnection;
     long TimeCorrection;
 
-
-    //Xml;
-
-    public void Start(String aServerIP, String aPassword)
+    public void PollTask(String aServerIP, String aPassword)
     {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
@@ -32,8 +36,8 @@ public class PollTask {
         HTTPClient = new AsyncHttpClient();
         HTTPClient.setTimeout(15000);
 
-        HTTPResponse = null;//todo HTTP
-        //CancelTokenSource = new CancellationTokenSource();
+        //HTTPResponse = null;
+
         RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
 
         Connection = false;
@@ -41,9 +45,23 @@ public class PollTask {
         SID = 0;
         CommandID = 10000;
         Terminated = false;
-        SocketClient.chText("Начало опроса");
-        NextPoll();
 
+        SocketClient.chText("Начало опроса");
+
+        DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        //NextPoll(); todo??
+
+    }
+
+    private int IncCID() {
+        if (CID < 0x40000000)
+            CID++;
+        else
+            CID = 1;
+        return CID;
     }
 
     private void NextPoll()
@@ -72,25 +90,39 @@ public class PollTask {
     {
         String Nonce = Protocol.GetNonce();
         Date now = new Date();
+
         String CreationTime = Protocol.DateFormat.format(new Date(now.getTime() + TimeCorrection));
 
-        if (Math.abs(TimeUnit.MILLISECONDS.toSeconds(TimeCorrection)) > 5)
+        if (Math.abs(TimeCorrection) > 5)
         {
             SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
         }
-        else
-        {
+        else {
             XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
         }
-        Content = Xml.Encoding.UTF_8.toString().getBytes(XContent.ToString());//todo XML
+        try {
 
-        String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
+            String s = "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+            Content = s.getBytes("UTF8");
 
-        HTTPClient.removeAllHeaders();
-        HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
-        HTTPClient.addHeader("Date",now.toString());
-        HTTPClient.addHeader("Connection", "Close");
+            String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
+
+            URL url = new URL(String.format("http://%s%s", ServerIP, Protocol.URL));
+            urlConnection = (HttpURLConnection)url.openConnection();
+
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
+            urlConnection.setRequestProperty("Date", LocalDateFormat.format(now));
+            urlConnection.setRequestProperty("Connection", "close");
+            urlConnection.setRequestProperty("Content-Type", "application/json");
+            urlConnection.setRequestProperty("Accept-Encoding", "identity");
+
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+        } catch (Exception e) {
+            SocketClient.chText(e.getMessage());
+        }
     }
 
     private void SendRequestAsync()
@@ -98,19 +130,34 @@ public class PollTask {
         try
         {
             if (XContent != null)//todo XML
-            {//String.format("%s = %d", "joe", 35)
+            {
                 SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
             }
+            DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
+            dataOutputStream.write(Content);
 
-            HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);//todo HTTP
+            dataOutputStream.flush();
+            dataOutputStream.close();
+
+            int responseCode = urlConnection.getResponseCode();
+            String response = urlConnection.getResponseMessage();
+
+            urlConnection.disconnect();
         }
         catch(Exception e)
         {
-            HTTPResponse = null;//todo HTTP
+            SocketClient.chText(e.getMessage());
+            //HTTPResponse = null;
         }
-        HandleResponse();
+        //HandleResponse();
         NextPoll();
+    }
 
+    @Override
+    protected String doInBackground(String... strings) {
+
+        NextPoll();
+        return null;
     }
 
     private void HandleResponse()
