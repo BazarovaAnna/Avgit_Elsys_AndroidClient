@@ -18,7 +18,7 @@ public class PollTask {
     private byte[] Content;
     String RequestUri;
     AsyncHttpClient HTTPClient;
-    AsyncHttpResponseHandler HTTPResponse;
+    //AsyncHttpResponseHandler HTTPResponse; todo HTTP (this is wrong data type, i guess)
     Duration TimeCorrection;
 
     //Xml;
@@ -117,7 +117,7 @@ public class PollTask {
         boolean connection = false;
         //if (!CancelTokenSource.IsCancellationRequested)
             if (HTTPResponse != null)
-                if ((HTTPResponse.StatusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))//todo HTTP
+                if ((HTTPResponse.statusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))//todo HTTP
                 {
                     connection = true;
                     if (HTTPResponse.Headers.Date.HasValue)//todo HTTP
