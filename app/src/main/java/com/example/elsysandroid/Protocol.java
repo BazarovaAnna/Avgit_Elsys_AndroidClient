@@ -8,6 +8,7 @@ import org.w3c.dom.Element;
 import java.io.ByteArrayOutputStream;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Random;
 
 import javax.crypto.Mac;
@@ -24,6 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 public final class Protocol{
     public static final String URL = "/xmlapi/std";
     public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    public static final SimpleDateFormat LocalDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
 
     public static String toString(Element element) {
         try {
@@ -67,6 +69,25 @@ public final class Protocol{
             e.printStackTrace();
         }
         return null;
+    }
+
+    public static Element GetXContent(int aCID, int aSIDResp, Date date) {
+        Element root = GetXContent(aCID, aSIDResp);
+        Element body = (Element) root.getElementsByTagName("Body").item(0);
+        Document document = root.getOwnerDocument();
+
+        Element setDateTime = document.createElement("SetDateTime");
+        body.appendChild(setDateTime);
+
+        Element localTime = document.createElement("LocalTime");
+        localTime.appendChild(document.createTextNode(LocalDateFormat.format(date)));
+        setDateTime.appendChild(localTime);
+
+        Element utcTime = document.createElement("UTCTime");
+        utcTime.appendChild(document.createTextNode(DateFormat.format(date)));
+        setDateTime.appendChild(utcTime);
+
+        return root;
     }
 
     public static String GetNonce(){
