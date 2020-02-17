@@ -18,15 +18,15 @@ public class SocketClient {
 
     /**
      * Функция, выполняющаяся при нажатии на кнопку. В случае нажатия на кнопку с ID "butt1" - начинается http-обмен.
-     * @param btnName - название кнопки - для того, чтобы разные кнопки обрабатывать по-разному
-     * @param textV - поле, в которое будет выводиться текст
+     * @param btnName название кнопки - для того, чтобы разные кнопки обрабатывать по-разному
+     * @param textV поле, в которое будет выводиться текст
      * @see SocketClient#tv
-     * {@value} textIP - IP адрес сервера
-     * {@value} textPassword - пароль для шифрования
-     * {@value} pt - экземпляр класса для клиент-серверного обмена
+     * {@value} textIP IP адрес сервера
+     * {@value} textPassword пароль для шифрования
+     * {@value} pt экземпляр класса для клиент-серверного обмена
      * @see PollTask#Start(String, String)
      */
-    void buttonClicked(String btnName, TextView textV){
+    public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
 
             textV.setText("Clicked");
@@ -45,7 +45,7 @@ public class SocketClient {
 
     /**
      * Функция, изменяющая текст в поле на экране андроид
-     * @param str - текст, который хотим отобразить
+     * @param str текст, который хотим отобразить
      */
     public static void chText(String str){
         tv.setText(str);

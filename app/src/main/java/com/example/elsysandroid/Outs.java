@@ -6,13 +6,14 @@ package com.example.elsysandroid;
  * @version 1.0
  */
 public enum Outs {
-    /**
-     * SwitchOff - выключить
-     * Impulse - импульс
-     * SwitchOn - включить
-     * Invert - переключить
-     */
-    SwitchOff(0), Impulse(1), SwitchOn(2), Invert(3);
+    /** Выключить */
+    SwitchOff(0),
+    /** Импульс */
+    Impulse(1),
+    /** Включить */
+    SwitchOn(2),
+    /** Переключить */
+    Invert(3);
     /**
      * Поле - код состояния
      */
@@ -20,7 +21,7 @@ public enum Outs {
 
     /**
      * Функция - конструктор
-     * @param code - код состояния
+     * @param code код состояния
      */
     Outs(int code){
         this.code = code;

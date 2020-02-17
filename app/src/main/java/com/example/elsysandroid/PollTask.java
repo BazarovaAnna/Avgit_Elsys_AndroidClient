@@ -47,8 +47,8 @@ public class PollTask extends AsyncTask<String, Void, String> {
 
     /**
      * Функция, инициализирующая обмен с сервером и задающая базовые значения
-     * @param aServerIP - IP-адрес сервера
-     * @param aPassword - пароль для шифрования данных
+     * @param aServerIP IP-адрес сервера
+     * @param aPassword пароль для шифрования данных
      */
     public void Start(String aServerIP, String aPassword)
     {
@@ -77,7 +77,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
 
     /**
      * Функция, реализующая инкрементацию поля CID в некоторых пределах
-     * @return - CID+1 или 1
+     * @return CID+1 или 1
      * @see PollTask#CID
      */
     private int IncCID() {
@@ -103,10 +103,10 @@ public class PollTask extends AsyncTask<String, Void, String> {
     /**
      * Функция подготовки запроса
      * Здесь происходит коррекция времени с сервером, формирование заголовков, формирование и шифрование контента
-     * {@value} now - время начала формирования запроса по клиенту
-     * {@value} CreationTime - время начала формирования запроса по серверу
-     * {@value} XContent - данные в формате xml
-     * {@value} s - строка, которую отправляем (ВРЕМЕННО!!!)
+     * {@value} now время начала формирования запроса по клиенту
+     * {@value} CreationTime время начала формирования запроса по серверу
+     * {@value} XContent данные в формате xml
+     * {@value} s строка, которую отправляем (ВРЕМЕННО!!!)
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat
      */
@@ -153,8 +153,8 @@ public class PollTask extends AsyncTask<String, Void, String> {
      * Функция, реализующая асинхронное отправление запроса серверу
      * Здесь получается и расшифровывается ответ от сервера, который затем отправляется на обработчик
      * Затем клиент  опять переводится в режим подготовки запроса
-     * {@value} responseCode - код возврата
-     * {@value} response - ответ сервера в виде строки
+     * {@value} responseCode код возврата
+     * {@value} response ответ сервера в виде строки
      * @see PollTask#HandleResponse(int, String)
      * @see PollTask#NextPoll()
      */
@@ -196,8 +196,8 @@ public class PollTask extends AsyncTask<String, Void, String> {
     /**
      * Функция парсит ответ сервера из строки в структуру для обработки,
      * затем в зависимости от результата обработки задает параметры для формирования нового запроса
-     * @param responseCode - код возврата
-     * @param response - ответ сервера в виде строки
+     * @param responseCode код возврата
+     * @param response ответ сервера в виде строки
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */

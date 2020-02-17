@@ -37,7 +37,7 @@ public final class Protocol{
 
     /**
      * Функция для конвертации xml-элемента в строку
-     * @param element - xml-элемент
+     * @param element xml-элемент
      * @return возвращает полученную строку
      */
     public static String toString(Element element) {
@@ -59,9 +59,9 @@ public final class Protocol{
 
     /**
      * Функция для формирования аргуметнов для запроса в виде xml
-     * @param aCID - ID клиента
-     * @param aSIDResp - ID ответа сервера
-     * @return - xml-элемент, готовый к отправке
+     * @param aCID ID клиента
+     * @param aSIDResp ID ответа сервера
+     * @return возвращает xml-элемент, готовый к отправке
      * @see Protocol#GetXContent(int, int, Date)
      */
     public static Element GetXContent(int aCID, int aSIDResp) {
@@ -93,10 +93,10 @@ public final class Protocol{
 
     /**
      * Функция для формирования аргуметнов для запроса в виде xml
-     * @param aCID - ID клиента
-     * @param aSIDResp - ID ответа сервера
-     * @param date - скорректированное время
-     * @return - xml-элемент, готовый к отправке
+     * @param aCID ID клиента
+     * @param aSIDResp ID ответа сервера
+     * @param date скорректированное время
+     * @return возвращает xml-элемент, готовый к отправке
      * @see Protocol#GetXContent(int, int)
      */
     public static Element GetXContent(int aCID, int aSIDResp, Date date) {
@@ -120,7 +120,7 @@ public final class Protocol{
 
     /**
      * Функция для формирования случайной последовательности из 20 байт
-     * @return - случайная последовательность из 20 байт
+     * @return возвращает случайную последовательность из 20 байт
      */
     public static String GetNonce(){
         byte[] nonce = new byte[20];
@@ -131,11 +131,11 @@ public final class Protocol{
 
     /**
      * Функция, формирующая зашифрованную строку алгоритмом HMAC-SHA-1
-     * @param aNonce - случайная последовательность из 20 байт
-     * @param aPassword - ключ (пароль для шифрования)
-     * @param aContent - последовательность байтов, которую необходимо зашифровать
-     * @param aCreationTime - время начала формирования запроса
-     * @return - зашифрованная строка
+     * @param aNonce случайная последовательность из 20 байт
+     * @param aPassword ключ (пароль для шифрования)
+     * @param aContent последовательность байтов, которую необходимо зашифровать
+     * @param aCreationTime время начала формирования запроса
+     * @return возвращает зашифрованную строку
      * @see PollTask
      */
     public static String GetDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
