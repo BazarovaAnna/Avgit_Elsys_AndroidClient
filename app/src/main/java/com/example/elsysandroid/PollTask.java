@@ -75,13 +75,13 @@ public class PollTask {
         if (Math.abs(TimeCorrection.getSeconds()) > 5)
         {
             SocketClient.chText("Синхронизация времени");
-            XContent = Protocol.GetXContent(IncCID(), SID, now);
+            XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
         }
         else
         {
-            XContent = Protocol.GetXContent(IncCID(), SID);
+            XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
         }
-        Content = Xml.Encoding.UTF_8.toString().getBytes(XContent.ToString());
+        Content = Xml.Encoding.UTF_8.toString().getBytes(XContent.ToString());//todo XML
 
         String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
@@ -95,12 +95,12 @@ public class PollTask {
     {
         try
         {
-            if (XContent != null)
+            if (XContent != null)//todo XML
             {
-                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));
+                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Instant.now().toString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));//todo XML, DATETIME
             }
 
-            HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);
+            HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);//todo HTTP
         }
         catch(Exception e)
         {
@@ -116,20 +116,20 @@ public class PollTask {
         boolean connection = false;
         //if (!CancelTokenSource.IsCancellationRequested)
             if (HTTPResponse != null)
-                if ((HTTPResponse.StatusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))
+                if ((HTTPResponse.StatusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))//todo HTTP
                 {
                     connection = true;
-                    if (HTTPResponse.Headers.Date.HasValue)
-                        TimeCorrection = HTTPResponse.Headers.Date.Value - DateTime.Now.ToUniversalTime();
+                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - DateTime.Now.ToUniversalTime();//todo HTTP, DATETIME
 
                     try
                     {
-                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);
-                        if (Content.Root != null)
+                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML
+                        if (Content.Root != null)//todo XML
                         {
-                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));
-                            var BodyNodes = Content.Element("Envelope").Element("Body").Elements();
-                            foreach (var node in BodyNodes)
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));//todo  XML DATETIME
+                            var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
+                            foreach (var node in BodyNodes)//todo JAVA
                             {
                                 if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
                                 if (node.Name == "SID") uint.TryParse(node.Value, out SID);
@@ -149,8 +149,7 @@ public class PollTask {
                                 if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
                                 if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
                             }
-                            //totodo здесь нужно проверять наличие требуемого узла, чтобы завершать инициализацию при отсутствии ответов
-                            //CheckInit();
+                            
                         }
                     }
                     catch(Exception e)
