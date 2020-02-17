@@ -30,7 +30,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
     private String response;
     private int responseCode;
 
-    public void PollTask(String aServerIP, String aPassword)
+    public void Start(String aServerIP, String aPassword)
     {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
@@ -98,10 +98,10 @@ public class PollTask extends AsyncTask<String, Void, String> {
         if (Math.abs(TimeCorrection) > 5)
         {
             SocketClient.chText("Синхронизация времени");
-            XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
+            //XContent = Protocol.GetXContent(IncCID(), SID, now);//todo XML
         }
         else {
-            XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
+            //XContent = Protocol.GetXContent(IncCID(), SID);//todo XML
         }
         try {
 
@@ -131,9 +131,9 @@ public class PollTask extends AsyncTask<String, Void, String> {
     {
         try
         {
-            if (XContent != null)//todo XML
+            //if (XContent != null)//todo XML
             {
-                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
+                //SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
             dataOutputStream.write(Content);
@@ -151,7 +151,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
             SocketClient.chText(e.getMessage());
             response = null;
         }
-        HandleResponse(responseCode,response);
+        //HandleResponse(responseCode,response);
         NextPoll();
     }
 
@@ -162,7 +162,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return null;
     }
 
-    private void HandleResponse(int responseCode,String response)
+    /*private void HandleResponse(int responseCode,String response)
     {
         boolean connection = false;
         //todo* response parse from string into some collection that has headers & content as a tree-like structure
@@ -181,7 +181,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
                         {
                             SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
-                            /*foreach (var node in BodyNodes)//todo JAVA
+                            foreach (var node in BodyNodes)//todo JAVA
                             {
                                 if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
                                 if (node.Name == "SID") uint.TryParse(node.Value, out SID);
@@ -200,8 +200,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
                                 if (node.Name == "DisconnectedMBNets") HandleDisconnectedMBNets(node);
                                 if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
                                 if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
-                            }*/
-
+                            }
                         }
                     }
                     catch(Exception e)
@@ -218,5 +217,6 @@ public class PollTask extends AsyncTask<String, Void, String> {
             else
                 SocketClient.chText("Потеря связи");
         }
-    }
+    }*/
+
 }

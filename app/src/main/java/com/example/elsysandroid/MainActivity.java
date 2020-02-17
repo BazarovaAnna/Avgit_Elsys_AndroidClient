@@ -12,11 +12,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Button btnClick= (Button) findViewById(R.id.btnClick_view);
         final TextView textV = (TextView) findViewById(R.id.text_view);
+
         final SocketClient sc=new SocketClient();
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
