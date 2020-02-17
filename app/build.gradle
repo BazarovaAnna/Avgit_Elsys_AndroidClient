@@ -29,5 +29,5 @@ dependencies {
     implementation 'commons-codec:commons-codec:1.14'
     implementation 'com.loopj.android:android-async-http:1.4.5'
     //implementation group: 'org.jboss.jbossas', name: 'jboss-as-jbossmq', version: '5.0.0.CR2'
-    
+
 }

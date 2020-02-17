@@ -18,7 +18,7 @@ public class PollTask {
     String RequestUri;
     AsyncHttpClient HTTPClient;
 
-    HttpResponseMessage HTTPResponse;// todo HTTP (this is wrong data type, i guess)
+    HttpResponseMessage HTTPResponse;
     long TimeCorrection;
 
 
