@@ -20,7 +20,7 @@ public class PollTask {
     AsyncHttpResponseHandler HTTPResponse;
     Duration TimeCorrection;
 
-    Xml;
+    //Xml;
 
     public void Start(String aServerIP, String aPassword)
     {
@@ -87,8 +87,8 @@ public class PollTask {
 
         HTTPClient.removeAllHeaders();
         HTTPClient.addHeader("ECNC-Auth", String.format("Nonce=\"{0}\", Created=\"{1}\", Digest=\"{2}\"", Nonce, CreationTime, Digest));
-        HTTPClient.DefaultRequestHeaders.Date = now.ToUniversalTime();
-        HTTPClient.DefaultRequestHeaders.ConnectionClose = true;
+        HTTPClient.addHeader("Date",now.toString());
+        HTTPClient.addHeader("Connection", "Close");
     }
 
     private void SendRequestAsync()
@@ -97,7 +97,7 @@ public class PollTask {
         {
             if (XContent != null)
             {
-                WriteToLog(new XElement("Client", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));
+                SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), XContent));
             }
 
             HTTPResponse = await HTTPClient.PostAsync(RequestUri, new ByteArrayContent(Content), CancelTokenSource.Token);
@@ -114,7 +114,7 @@ public class PollTask {
     private void HandleResponse()
     {
         boolean connection = false;
-        if (!CancelTokenSource.IsCancellationRequested)
+        //if (!CancelTokenSource.IsCancellationRequested)
             if (HTTPResponse != null)
                 if ((HTTPResponse.StatusCode == HttpStatusCode.OK) || (HTTPResponse.StatusCode == HttpStatusCode.Unauthorized))
                 {
@@ -127,7 +127,7 @@ public class PollTask {
                         XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);
                         if (Content.Root != null)
                         {
-                            WriteToLog(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", DateTime.Now.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss.fffZ")), Content.Root));
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();
                             foreach (var node in BodyNodes)
                             {
