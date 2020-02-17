@@ -1,14 +1,12 @@
 package com.example.elsysandroid;
 
 import android.util.Xml;
-
 import com.loopj.android.http.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import oracle.iot.message.HttpResponseMessage;
 
-import javax.xml.datatype.Duration;
 
 public class PollTask {
     String ServerIP,Password;
@@ -20,7 +18,7 @@ public class PollTask {
     String RequestUri;
     AsyncHttpClient HTTPClient;
 
-    //AsyncHttpResponseHandler HTTPResponse; todo HTTP (this is wrong data type, i guess)
+    HttpResponseMessage HTTPResponse;// todo HTTP (this is wrong data type, i guess)
     long TimeCorrection;
 
 
@@ -133,7 +131,7 @@ public class PollTask {
                         {
                             SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
                             var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
-                            foreach (var node in BodyNodes)//todo JAVA
+                            /*foreach (var node in BodyNodes)//todo JAVA
                             {
                                 if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
                                 if (node.Name == "SID") uint.TryParse(node.Value, out SID);
@@ -152,7 +150,7 @@ public class PollTask {
                                 if (node.Name == "DisconnectedMBNets") HandleDisconnectedMBNets(node);
                                 if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
                                 if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
-                            }
+                            }*/
 
                         }
                     }
