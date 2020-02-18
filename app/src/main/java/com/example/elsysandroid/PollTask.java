@@ -1,6 +1,6 @@
 package com.example.elsysandroid;
 
-import android.os.AsyncTask;
+
 import android.os.Handler;
 
 import org.w3c.dom.Element;
@@ -8,9 +8,8 @@ import org.w3c.dom.Element;
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.TimeZone;
+
 
 /**
  * Класс для клиент-серверного обмена
@@ -48,14 +47,6 @@ public class PollTask {
      */
     String RequestUri;
 
-    /**
-     * Поле - формат серверных даты-времени для конвертации в строку
-     */
-    SimpleDateFormat DateFormat;
-    /**
-     * Поле - формат локальных даты-времени для конвертации в строку
-     */
-    SimpleDateFormat LocalDateFormat;
     /**
      * Поле - Http соединение с сервером
      */
@@ -105,9 +96,6 @@ public class PollTask {
 
         SocketClient.chText("Начало опроса");
 
-        DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-        LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         handler = new Handler();
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -135,12 +123,7 @@ public class PollTask {
         return CID;
     }
 
-    /**
-     * Функция, вызывающая подготовку запроса и отправление его
-     *
-     * @see PollTask#PrepareRequest()
-     * @see PollTask#SendRequestAsync()
-     */
+
     /**
      * Функция подготовки запроса
      * Здесь происходит коррекция времени с сервером, формирование заголовков, формирование и шифрование контента
@@ -176,7 +159,7 @@ public class PollTask {
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
-            urlConnection.setRequestProperty("Date", LocalDateFormat.format(now));
+            urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
             //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
@@ -200,7 +183,7 @@ public class PollTask {
     private void SendRequestAsync() {
         try {
             if (XContent != null) {
-                //SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
+                SocketClient.chText("Sending request");
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
             dataOutputStream.write(Content);
@@ -224,6 +207,11 @@ public class PollTask {
         HandleResponse(responseCode, response);
     }
 
+    /**
+     * Функция формирует строку для отправления серверу
+     * @param aCommand команда, которую хотим отправить
+     * @return возвращает сторку для отправления
+     */
     public String makeCommand(Outs aCommand) {
         switch (aCommand) {
             case Invert:

@@ -10,6 +10,7 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
+import java.util.TimeZone;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -21,6 +22,7 @@ import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
 /**
  * Класс, реализующий шифрование и кодирование
  * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
@@ -31,9 +33,13 @@ public final class Protocol{
     public static final String URL = "/xmlapi/std";
 
     /** Поле - формат серверных даты-времени для конвертации в строку */
-    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     /** Поле - формат локальных даты-времени для конвертации в строку */
-    public static final SimpleDateFormat LocalDateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z");
+    public static final SimpleDateFormat LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    /** Задаем Time Zone */
+    static {
+        DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+    }
 
     /**
      * Функция для конвертации xml-элемента в строку
