@@ -30,6 +30,19 @@
         android:text="Dev Field"
 
         />
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/code_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnClick_view"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:text="Код ответа"
+        android:textColor="#000"
+        android:textSize="16sp" />
+
     <TextView
         android:id="@+id/text_view"
         android:layout_width="wrap_content"

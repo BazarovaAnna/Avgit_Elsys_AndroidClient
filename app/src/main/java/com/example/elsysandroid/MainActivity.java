@@ -22,6 +22,9 @@ public class MainActivity extends AppCompatActivity {
      * {@value} sc экземпляр класса-буфера между клиент-серверным взаимодействием и андроид-интерфейсом
      * @see SocketClient
      */
+
+    static TextView codeText;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -30,9 +33,8 @@ public class MainActivity extends AppCompatActivity {
 
         Button btnClick= (Button) findViewById(R.id.btnClick_view);
         final TextView textV = (TextView) findViewById(R.id.text_view);
-
         Button btnImp = (Button) findViewById(R.id.btnClick_imp);
-
+        codeText = findViewById(R.id.code_view);
 
         final SocketClient sc=new SocketClient();
         btnClick.setOnClickListener(new View.OnClickListener() {
