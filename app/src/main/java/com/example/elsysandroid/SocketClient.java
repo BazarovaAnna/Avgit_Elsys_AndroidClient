@@ -24,7 +24,7 @@ public class SocketClient {
      * {@value} textIP IP адрес сервера
      * {@value} textPassword пароль для шифрования
      * {@value} pt экземпляр класса для клиент-серверного обмена
-     * @see PollTask#Start(String, String)
+     * @see PollTask#Start(String, String, Outs)
      */
     public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
