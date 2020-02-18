@@ -137,7 +137,8 @@ public final class Protocol{
         Element root = GetXContent(aCID, aSIDResp);
         Document document = root.getOwnerDocument();
 
-        root.appendChild(document.adoptNode(aInitData.cloneNode(true)));
+        Element body = (Element) root.getElementsByTagName("Body").item(0);
+        body.appendChild(document.adoptNode(aInitData.cloneNode(true)));
 
         return root;
     }
