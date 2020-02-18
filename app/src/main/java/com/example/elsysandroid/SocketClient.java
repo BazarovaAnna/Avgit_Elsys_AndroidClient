@@ -3,7 +3,7 @@ import android.widget.TextView;
 
 /**
  * Класс-буфер между клиент-серверным взаимодействием и андроид-интерфейсом
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
 public class SocketClient {

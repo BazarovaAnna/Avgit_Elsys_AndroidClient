@@ -1,8 +1,8 @@
 package com.example.elsysandroid;
 
 /**
- * Перечисление возможных состояний выходов контроллера
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * Перечисление возможных команд для различных устройств контроллера
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
 public enum Outs {
@@ -14,7 +14,7 @@ public enum Outs {
     SwitchOn(DevType.Out,2),
     /** Переключить */
     Invert(DevType.Out,3),
-
+    /** Нет команды*/
     None(DevType.None,10000);
     /**
      * Поле - код состояния
@@ -26,6 +26,7 @@ public enum Outs {
     private DevType dev;
     /**
      * Функция - конструктор
+     * @param dev устройство
      * @param code код состояния
      */
     Outs(DevType dev, int code){
