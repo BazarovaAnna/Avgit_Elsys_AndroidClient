@@ -154,7 +154,7 @@ public class PollTask {
      * {@value} now время начала формирования запроса по клиенту
      * {@value} CreationTime время начала формирования запроса по серверу
      * {@value} XContent данные в формате xml
-     * {@value} s строка, которую отправляем (ВРЕМЕННО!!!)
+     * {@value} s строка, которую отправляем
      *
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat

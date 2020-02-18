@@ -159,24 +159,27 @@ public final class Protocol{
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
             Document document = documentBuilder.newDocument();
 
-            Element root = document.createElement("ControlCmd");
+            Element root = document.createElement("ControlCmds");
             document.appendChild(root);
+
+            Element controlCmd = document.createElement("ControlCmd");
+            root.appendChild(controlCmd);
 
             Element devId = document.createElement("DevID");
             devId.appendChild(document.createTextNode(Integer.toString(aID)));
-            root.appendChild(devId);
+            controlCmd.appendChild(devId);
 
             Element devType = document.createElement("DevType");
             devType.appendChild(document.createTextNode(Integer.toString(aDevType)));
-            root.appendChild(devType);
+            controlCmd.appendChild(devType);
 
             Element action = document.createElement("Action");
             action.appendChild(document.createTextNode(Integer.toString(aCommand)));
-            root.appendChild(action);
+            controlCmd.appendChild(action);
 
             Element id = document.createElement("ID");
             id.appendChild(document.createTextNode(Integer.toString(aCommandID)));
-            root.appendChild(id);
+            controlCmd.appendChild(id);
 
             return root;
         } catch (ParserConfigurationException e) {
