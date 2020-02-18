@@ -14,6 +14,8 @@ import android.widget.TextView;
  */
 public class MainActivity extends AppCompatActivity {
 
+    public static TextView codeText;
+
     /**
      * Метод, связывающий java-компоненты с объектами на экране android.
      * Для java-компонентов назначается слушатель, активирующий метод - соответствующее действие.
@@ -32,6 +34,7 @@ public class MainActivity extends AppCompatActivity {
         final TextView textV = (TextView) findViewById(R.id.text_view);
 
         Button btnImp = (Button) findViewById(R.id.btnClick_imp);
+        codeText = findViewById(R.id.code_view);
 
 
         final SocketClient sc=new SocketClient();

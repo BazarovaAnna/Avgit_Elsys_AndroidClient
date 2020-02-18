@@ -1,7 +1,9 @@
 package com.example.elsysandroid;
 
 
+import android.icu.util.LocaleData;
 import android.os.Handler;
+import android.util.Log;
 
 import org.w3c.dom.Element;
 
@@ -9,12 +11,13 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
  * Класс для клиент-серверного обмена
  *
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
 public class PollTask {
@@ -151,7 +154,7 @@ public class PollTask {
      * {@value} now время начала формирования запроса по клиенту
      * {@value} CreationTime время начала формирования запроса по серверу
      * {@value} XContent данные в формате xml
-     * {@value} s строка, которую отправляем
+     * {@value} s строка, которую отправляем (ВРЕМЕННО!!!)
      *
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat
@@ -183,12 +186,14 @@ public class PollTask {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
+            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
         } catch (Exception e) {
-            SocketClient.chText(e.getMessage());
+            e.printStackTrace();
+            stopAsyncTask = true;
         }
     }
 
@@ -204,7 +209,13 @@ public class PollTask {
     private void SendRequestAsync() {
         try {
             if (XContent != null) {
-                SocketClient.chText("Sending request");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SocketClient.chText("Sending request");
+                    }
+                });
+
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
             dataOutputStream.write(Content);
@@ -217,6 +228,7 @@ public class PollTask {
 
             urlConnection.disconnect();
         } catch (final Exception e) {
+            e.printStackTrace();
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -224,6 +236,7 @@ public class PollTask {
                     response = null;
                 }
             });
+            stopAsyncTask = true;
         }
         HandleResponse(responseCode, response);
     }
@@ -251,8 +264,67 @@ public class PollTask {
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
-
-    private void HandleResponse(int responseCode, String response) {
-        //todo FiRsT
+    private void HandleResponse(final int responseCode, String response) {
+        Log.d("Response",response+": "+response);
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.codeText.setText(String.valueOf(responseCode));
+                if (responseCode == 401) {
+                    stopAsyncTask = true;
+                    SocketClient.chText("Ошибка аутентификации");
+                }
+            }
+        });
+        /*boolean connection = false;
+        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
+        //if (!CancelTokenSource.IsCancellationRequested)
+            if (response != null)
+                if ((responseCode == 200) || (responseCode == 401))
+                {
+                    connection = true;
+                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP cannot fix w/o *
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP cannot fix w/o *
+                    try
+                    {
+                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML, HTTP cannot fix w/o *
+                        if (Content.Root != null)//todo XML
+                        {
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
+                            var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
+                            foreach (var node in BodyNodes)//todo JAVA
+                            {
+                                if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
+                                if (node.Name == "SID") uint.TryParse(node.Value, out SID);
+                                if (node.Name == "Events") HandleEvents(node);
+                                if (node.Name == "DevStates") HandleDevStates(node);
+                                if (node.Name == "OnlineStatus") HandleOnlineStatus(node);
+                                if (node.Name == "UpdSysConfigResponse") HandleInitDevTree(node);
+                                if (node.Name == "UpdAPBConfigResponse") HandleLoadAPB(node);
+                                if (node.Name == "ChangesResults") HandleChangesResult(node);
+                                if (node.Name == "ChangesResponse") HandleChangesResponse(node);
+                                if (node.Name == "ErrCode") HandleError(node.Value);
+                                if (node.Name == "ConfigGUID") CheckConfigGUID(node.Value);
+                                if (node.Name == "ConnectedDevices") HandleConnectedDevices(node);
+                                if (node.Name == "DisconnectedDevices") HandleDisconnectedDevices(node);
+                                if (node.Name == "ConnectedMBNets") HandleConnectedMBNets(node);
+                                if (node.Name == "DisconnectedMBNets") HandleDisconnectedMBNets(node);
+                                if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
+                                if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                    }
+                }
+        if (Connection != connection)
+        {
+            Connection = connection;
+            if (Connection)
+                SocketClient.chText("Восстановление связи");
+            else
+                SocketClient.chText("Потеря связи");
+        }*/
     }
 }
