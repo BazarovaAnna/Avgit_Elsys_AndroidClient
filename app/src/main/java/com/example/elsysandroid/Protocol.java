@@ -97,7 +97,7 @@ public final class Protocol{
      * @param aSIDResp ID ответа сервера
      * @param date скорректированное время
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetXContent(int, int)
+     * @see Protocol#GetXContent(int, int, Date)
      */
     public static Element GetXContent(int aCID, int aSIDResp, Date date) {
         Element root = GetXContent(aCID, aSIDResp);
@@ -114,6 +114,87 @@ public final class Protocol{
         Element utcTime = document.createElement("UTCTime");
         utcTime.appendChild(document.createTextNode(DateFormat.format(date)));
         setDateTime.appendChild(utcTime);
+
+        return root;
+    }
+
+    /**
+     * Функция для формирования аргуметнов для запроса в виде xml
+     * @param aCID ID клиента
+     * @param aSIDResp ID ответа сервера
+     * @param aInitData xml-элемент, добавляемый в запрос
+     * @return возвращает xml-элемент, готовый к отправке
+     * @see Protocol#GetXContent(int, int, Element)
+     */
+    public static Element GetXContent(int aCID, int aSIDResp, Element aInitData)
+    {
+        Element root = GetXContent(aCID, aSIDResp);
+        Document document = root.getOwnerDocument();
+
+        root.appendChild(document.adoptNode(aInitData.cloneNode(true)));
+
+        return root;
+    }
+
+    /**
+     * Функция для формирования команды контроллеру виде xml
+     * @param aID ID элемента
+     * @param aDevType тип контроллера
+     * @param aCommand тип команды
+     * @param aCommandID номер команды
+     * @return возвращает xml-элемент, готовый к отправке
+     * @see Protocol#GetCommand(int, int, int, int)
+     */
+    public Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID)
+    {
+        try {
+            DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
+            Document document = documentBuilder.newDocument();
+
+            Element root = document.createElement("ControlCmd");
+            document.appendChild(root);
+
+            Element devId = document.createElement("DevID");
+            devId.appendChild(document.createTextNode(Integer.toString(aID)));
+            root.appendChild(devId);
+
+            Element devType = document.createElement("DevType");
+            devType.appendChild(document.createTextNode(Integer.toString(aDevType)));
+            root.appendChild(devType);
+
+            Element action = document.createElement("Action");
+            action.appendChild(document.createTextNode(Integer.toString(aCommand)));
+            root.appendChild(action);
+
+            Element id = document.createElement("ID");
+            id.appendChild(document.createTextNode(Integer.toString(aCommandID)));
+            root.appendChild(id);
+
+            return root;
+        } catch (ParserConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Функция для формирования команды контроллеру виде xml
+     * @param aID ID элемента
+     * @param aDevType тип контроллера
+     * @param aCommand тип команды
+     * @param aCommandID номер команды
+     * @param aDate время создания команды
+     * @return возвращает xml-элемент, готовый к отправке
+     * @see Protocol#GetCommand(int, int, int, int, Date)
+     */
+    public Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
+        Element root = GetCommand(aID, aDevType, aCommand, aCommandID);
+        Document document = root.getOwnerDocument();
+
+        Element date = document.createElement("DateTime");
+        date.appendChild(document.createTextNode(DateFormat.format(aDate)));
+        root.appendChild(date);
 
         return root;
     }
