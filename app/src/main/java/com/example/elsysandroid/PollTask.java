@@ -80,6 +80,9 @@ public class PollTask {
      * @param aServerIP IP-адрес сервера
      * @param aPassword пароль для шифрования данных
      */
+
+    boolean stopAsyncTask = false;
+
     public void Start(String aServerIP, String aPassword, Outs command) {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
@@ -100,7 +103,7 @@ public class PollTask {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (!stopAsyncTask) {
                     PrepareRequest();
                     SendRequestAsync();
                 }
@@ -223,6 +226,7 @@ public class PollTask {
 
     /**
      * Функция формирует строку для отправления серверу
+     *
      * @param aCommand команда, которую хотим отправить
      * @return возвращает сторку для отправления
      */
@@ -245,7 +249,71 @@ public class PollTask {
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
+<<<<<<< HEAD
     private void HandleResponse(int responseCode, String response) {
 
+=======
+    private void HandleResponse(final int responseCode, String response) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.codeText.setText(String.valueOf(responseCode));
+                if (responseCode == 401) {
+                    stopAsyncTask = true;
+                    SocketClient.chText("Ошибка аутентификации");
+                }
+            }
+        });
+        /*boolean connection = false;
+        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
+        //if (!CancelTokenSource.IsCancellationRequested)
+            if (response != null)
+                if ((responseCode == 200) || (responseCode == 401))
+                {
+                    connection = true;
+                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP cannot fix w/o *
+                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP cannot fix w/o *
+                    try
+                    {
+                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML, HTTP cannot fix w/o *
+                        if (Content.Root != null)//todo XML
+                        {
+                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
+                            var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
+                            foreach (var node in BodyNodes)//todo JAVA
+                            {
+                                if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
+                                if (node.Name == "SID") uint.TryParse(node.Value, out SID);
+                                if (node.Name == "Events") HandleEvents(node);
+                                if (node.Name == "DevStates") HandleDevStates(node);
+                                if (node.Name == "OnlineStatus") HandleOnlineStatus(node);
+                                if (node.Name == "UpdSysConfigResponse") HandleInitDevTree(node);
+                                if (node.Name == "UpdAPBConfigResponse") HandleLoadAPB(node);
+                                if (node.Name == "ChangesResults") HandleChangesResult(node);
+                                if (node.Name == "ChangesResponse") HandleChangesResponse(node);
+                                if (node.Name == "ErrCode") HandleError(node.Value);
+                                if (node.Name == "ConfigGUID") CheckConfigGUID(node.Value);
+                                if (node.Name == "ConnectedDevices") HandleConnectedDevices(node);
+                                if (node.Name == "DisconnectedDevices") HandleDisconnectedDevices(node);
+                                if (node.Name == "ConnectedMBNets") HandleConnectedMBNets(node);
+                                if (node.Name == "DisconnectedMBNets") HandleDisconnectedMBNets(node);
+                                if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
+                                if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
+                            }
+                        }
+                    }
+                    catch(Exception e)
+                    {
+                    }
+                }
+        if (Connection != connection)
+        {
+            Connection = connection;
+            if (Connection)
+                SocketClient.chText("Восстановление связи");
+            else
+                SocketClient.chText("Потеря связи");
+        }*/
+>>>>>>> 6f6ff7523cc60fad265fe684878f4f757cea38f9
     }
 }
