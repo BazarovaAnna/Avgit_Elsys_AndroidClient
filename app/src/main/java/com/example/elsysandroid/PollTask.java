@@ -9,6 +9,7 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
@@ -80,10 +81,10 @@ public class PollTask {
      * @param aServerIP IP-адрес сервера
      * @param aPassword пароль для шифрования данных
      */
-    public void Start(String aServerIP, String aPassword, Outs command) {
+    public void Start(String aServerIP, String aPassword) {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
-        this.command = command;
+        this.command = Outs.None;
         response = null;
 
         RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
@@ -107,6 +108,10 @@ public class PollTask {
             }
         });
         thread.start();
+    }
+
+    public synchronized void sendCommand(Outs command) {
+        this.command = command;
     }
 
     /**
@@ -149,7 +154,7 @@ public class PollTask {
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat
      */
-    private void PrepareRequest() {
+    private synchronized void PrepareRequest() {
         String Nonce = Protocol.GetNonce();
         Date now = new Date();
 
@@ -158,13 +163,14 @@ public class PollTask {
         if (Math.abs(TimeCorrection) > 5) {
             SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);
+        } else if (command != Outs.None) {
+            XContent = makeCommand(command);
+            command = Outs.None;
         } else {
             XContent = Protocol.GetXContent(IncCID(), SID);
         }
         try {
-
-            String s = makeCommand(command);
-            Content = s.getBytes("UTF8");
+            Content = Protocol.toString(XContent).getBytes("UTF8");
 
             String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
@@ -226,13 +232,11 @@ public class PollTask {
      * @param aCommand команда, которую хотим отправить
      * @return возвращает сторку для отправления
      */
-    public String makeCommand(Outs aCommand) {
-        switch (aCommand) {
-            case None:
-                return Protocol.toString(Protocol.GetXContent(IncCID(), SID));
-            default:
-                return Protocol.toString(Protocol.GetXContent(IncCID(), SID, Protocol.GetCommand(0, aCommand.getDevType().getCode(), aCommand.getCode(), IncCommandID())));
+    private Element makeCommand(Outs aCommand) {
+        if (aCommand == Outs.None) {
+            return Protocol.GetXContent(IncCID(), SID);
         }
+        return Protocol.GetXContent(IncCID(), SID, Protocol.GetCommand(8, aCommand.getDevType().getCode(), aCommand.getCode(), IncCommandID()));
     }
 
 
