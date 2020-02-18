@@ -4,19 +4,24 @@
     android:layout_height="match_parent">
 
     <Button
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
         android:id="@+id/btnClick_view"
         android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_centerInParent="true"
         android:text="Start"
-        android:textSize="20sp" />
+        android:textSize="20sp"
+        android:layout_alignParentRight="true" />
+
     <Button
         android:id="@+id/btnClick_imp"
         android:layout_width="100dp"
         android:layout_height="50dp"
-        android:layout_below="@id/btnClick_view"
+        android:layout_alignParentBottom="true"
         android:text="impulse"
         android:textSize="20sp" />
+
     <TextView
         android:id="@+id/lbl_view"
         android:layout_width="wrap_content"

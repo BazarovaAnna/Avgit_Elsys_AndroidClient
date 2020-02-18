@@ -1,7 +1,10 @@
 package com.example.elsysandroid;
 
 import android.os.AsyncTask;
+import android.os.Handler;
+
 import org.w3c.dom.Element;
+
 import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -11,52 +14,85 @@ import java.util.TimeZone;
 
 /**
  * Класс для клиент-серверного обмена
+ *
  * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
-public class PollTask extends AsyncTask<String, Void, String> {
-    /** Поля, содержащие IP сервера и пароль для шифрования */
-    String ServerIP,Password;
-    /** Поле, показывающее, установлено ли соединение */
+public class PollTask {
+    /**
+     * Поля, содержащие IP сервера и пароль для шифрования
+     */
+    String ServerIP, Password;
+    /**
+     * Поле, показывающее, установлено ли соединение
+     */
     boolean Connection;
-    /** Поля, соответствующие Client ID и Server ID */
-    int CID,SID;
-    /** Поле, соответствующее ID команды */
+    /**
+     * Поля, соответствующие Client ID и Server ID
+     */
+    int CID, SID;
+    /**
+     * Поле, соответствующее ID команды
+     */
     int CommandID;
-    /** Поля, показывающее, была ли связь разорвана */
+    /**
+     * Поля, показывающее, была ли связь разорвана
+     */
     boolean Terminated;
-    /** Поле контента - тела отправляемого сообщения */
+    /**
+     * Поле контента - тела отправляемого сообщения
+     */
     private byte[] Content;
-    /** Поле, содержащее URI запроса */
+    /**
+     * Поле, содержащее URI запроса
+     */
     String RequestUri;
 
-    /** Поле - формат серверных даты-времени для конвертации в строку */
+    /**
+     * Поле - формат серверных даты-времени для конвертации в строку
+     */
     SimpleDateFormat DateFormat;
-    /** Поле - формат локальных даты-времени для конвертации в строку */
+    /**
+     * Поле - формат локальных даты-времени для конвертации в строку
+     */
     SimpleDateFormat LocalDateFormat;
-    /** Поле - Http соединение с сервером */
+    /**
+     * Поле - Http соединение с сервером
+     */
     HttpURLConnection urlConnection;
-    /** Поле для корректирования локального времени под серверное */
+    /**
+     * Поле для корректирования локального времени под серверное
+     */
     long TimeCorrection;//понадобится в реализации HandleResponse
-    /** Поле - ответ сервера в виде строки */
+    /**
+     * Поле - ответ сервера в виде строки
+     */
     private String response;//понадобится в реализации HandleResponse
-    /** Поле - код возврата (200 - ок) */
+    /**
+     * Поле - код возврата (200 - ок)
+     */
     private int responseCode;//понадобится в реализации HandleResponse
-    /** Поле - нода xml кода */
+    /**
+     * Поле - нода xml кода
+     */
     Element XContent;
-    /** Поле - команда */
+    /**
+     * Поле - команда
+     */
     Outs command;
+
+    Handler handler;
 
     /**
      * Функция, инициализирующая обмен с сервером и задающая базовые значения
+     *
      * @param aServerIP IP-адрес сервера
      * @param aPassword пароль для шифрования данных
      */
-    public void Start(String aServerIP, String aPassword, Outs command)
-    {
+    public void Start(String aServerIP, String aPassword, Outs command) {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
-        this.command=command;
+        this.command = command;
         response = null;
 
         RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
@@ -72,13 +108,22 @@ public class PollTask extends AsyncTask<String, Void, String> {
         DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
         DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
         LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-
-        NextPoll();
-
+        handler = new Handler();
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                while (true){
+                    PrepareRequest();
+                    SendRequestAsync();
+                }
+            }
+        });
+        thread.start();
     }
 
     /**
      * Функция, реализующая инкрементацию поля CID в некоторых пределах
+     *
      * @return CID+1 или 1
      * @see PollTask#CID
      */
@@ -92,16 +137,10 @@ public class PollTask extends AsyncTask<String, Void, String> {
 
     /**
      * Функция, вызывающая подготовку запроса и отправление его
+     *
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
-    private void NextPoll()
-    {
-        PrepareRequest();
-        SendRequestAsync();
-
-    }
-
     /**
      * Функция подготовки запроса
      * Здесь происходит коррекция времени с сервером, формирование заголовков, формирование и шифрование контента
@@ -109,22 +148,20 @@ public class PollTask extends AsyncTask<String, Void, String> {
      * {@value} CreationTime время начала формирования запроса по серверу
      * {@value} XContent данные в формате xml
      * {@value} s строка, которую отправляем (ВРЕМЕННО!!!)
+     *
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat
      */
-    private void PrepareRequest()
-    {
+    private void PrepareRequest() {
         String Nonce = Protocol.GetNonce();
         Date now = new Date();
 
         String CreationTime = Protocol.DateFormat.format(new Date(now.getTime() + TimeCorrection));
 
-        if (Math.abs(TimeCorrection) > 5)
-        {
+        if (Math.abs(TimeCorrection) > 5) {
             SocketClient.chText("Синхронизация времени");
             XContent = Protocol.GetXContent(IncCID(), SID, now);
-        }
-        else {
+        } else {
             XContent = Protocol.GetXContent(IncCID(), SID);
         }
         try {
@@ -135,7 +172,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
             String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
 
             URL url = new URL(String.format("http://%s%s", ServerIP, Protocol.URL));
-            urlConnection = (HttpURLConnection)url.openConnection();
+            urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setRequestMethod("POST");
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
@@ -157,15 +194,12 @@ public class PollTask extends AsyncTask<String, Void, String> {
      * Затем клиент  опять переводится в режим подготовки запроса
      * {@value} responseCode код возврата
      * {@value} response ответ сервера в виде строки
+     *
      * @see PollTask#HandleResponse(int, String)
-     * @see PollTask#NextPoll()
      */
-    private void SendRequestAsync()
-    {
-        try
-        {
-            if (XContent != null)
-            {
+    private void SendRequestAsync() {
+        try {
+            if (XContent != null) {
                 //SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
@@ -178,35 +212,29 @@ public class PollTask extends AsyncTask<String, Void, String> {
             response = urlConnection.getResponseMessage();
 
             urlConnection.disconnect();
+        } catch (final Exception e) {
+            handler.post(new Runnable() {
+                @Override
+                public void run() {
+                    SocketClient.chText(e.getMessage());
+                    response = null;
+                }
+            });
         }
-        catch(Exception e)
-        {
-            SocketClient.chText(e.getMessage());
-            response = null;
-        }
-        HandleResponse(responseCode,response);
-        NextPoll();
+        HandleResponse(responseCode, response);
     }
 
-    @Override
-    protected String doInBackground(String... strings) {
-
-        NextPoll();
-        return null;
-    }
-
-
-    public String makeCommand( Outs aCommand){
-        switch(aCommand){
+    public String makeCommand(Outs aCommand) {
+        switch (aCommand) {
             case Invert:
             case SwitchOn:
             case Impulse:
             case SwitchOff:
                 IncCID();
-                return "<Envelope>\n  <Body>\n    <CID>"+CID+"</CID>\n    <SIDResp>0</SIDResp>\n    <Action>"+aCommand.getCode()+"</Action>\n  </Body>\n</Envelope>";
+                return "<Envelope>\n  <Body>\n    <CID>" + CID + "</CID>\n    <SIDResp>0</SIDResp>\n    <Action>" + aCommand.getCode() + "</Action>\n  </Body>\n</Envelope>";
             default:
                 IncCID();
-                return "<Envelope>\n  <Body>\n    <CID>"+CID+"</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+                return "<Envelope>\n  <Body>\n    <CID>" + CID + "</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
         }
     }
 
@@ -214,13 +242,13 @@ public class PollTask extends AsyncTask<String, Void, String> {
     /**
      * Функция парсит ответ сервера из строки в структуру для обработки,
      * затем в зависимости от результата обработки задает параметры для формирования нового запроса
+     *
      * @param responseCode код возврата
-     * @param response ответ сервера в виде строки
+     * @param response     ответ сервера в виде строки
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
-    private void HandleResponse(int responseCode,String response)
-    {
+    private void HandleResponse(int responseCode, String response) {
         /*boolean connection = false;
         //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
         //if (!CancelTokenSource.IsCancellationRequested)
