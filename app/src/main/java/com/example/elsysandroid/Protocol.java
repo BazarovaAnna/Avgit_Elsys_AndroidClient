@@ -25,7 +25,7 @@ import javax.xml.transform.stream.StreamResult;
 
 /**
  * Класс, реализующий шифрование и кодирование
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
 public final class Protocol{
