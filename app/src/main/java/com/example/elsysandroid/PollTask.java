@@ -254,5 +254,15 @@ public class PollTask {
 
     private void HandleResponse(int responseCode, String response) {
         //todo FiRsT
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.codeText.setText(String.valueOf(responseCode));
+                if (responseCode == 401) {
+                    stopAsyncTask = true;
+                    SocketClient.chText("Ошибка аутентификации");
+                }
+            }
+        });
     }
 }
