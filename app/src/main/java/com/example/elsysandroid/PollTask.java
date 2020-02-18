@@ -1,7 +1,5 @@
 package com.example.elsysandroid;
 
-
-import android.icu.util.LocaleData;
 import android.os.Handler;
 import android.util.Log;
 
@@ -11,7 +9,7 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-import java.util.concurrent.locks.ReentrantLock;
+
 
 
 /**
@@ -186,7 +184,7 @@ public class PollTask {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
-            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
+
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
@@ -264,6 +262,7 @@ public class PollTask {
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
+
     private void HandleResponse(final int responseCode, String response) {
         Log.d("Response",response+": "+response);
         handler.post(new Runnable() {
@@ -276,55 +275,5 @@ public class PollTask {
                 }
             }
         });
-        /*boolean connection = false;
-        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
-        //if (!CancelTokenSource.IsCancellationRequested)
-            if (response != null)
-                if ((responseCode == 200) || (responseCode == 401))
-                {
-                    connection = true;
-                    if (HTTPResponse.Headers.Date.HasValue)//todo HTTP cannot fix w/o *
-                        TimeCorrection = HTTPResponse.Headers.Date.Value - new Date().getTime();//todo HTTP cannot fix w/o *
-                    try
-                    {
-                        XDocument Content = XDocument.Parse(HTTPResponse.Content.ReadAsStringAsync().Result);//todo XML, HTTP cannot fix w/o *
-                        if (Content.Root != null)//todo XML
-                        {
-                            SocketClient.chText(new XElement("MBNet", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), Content.Root));//todo  XML
-                            var BodyNodes = Content.Element("Envelope").Element("Body").Elements();//todo XML
-                            foreach (var node in BodyNodes)//todo JAVA
-                            {
-                                if (node.Name == "CIDResp") uint.TryParse(node.Value, out CIDResp);
-                                if (node.Name == "SID") uint.TryParse(node.Value, out SID);
-                                if (node.Name == "Events") HandleEvents(node);
-                                if (node.Name == "DevStates") HandleDevStates(node);
-                                if (node.Name == "OnlineStatus") HandleOnlineStatus(node);
-                                if (node.Name == "UpdSysConfigResponse") HandleInitDevTree(node);
-                                if (node.Name == "UpdAPBConfigResponse") HandleLoadAPB(node);
-                                if (node.Name == "ChangesResults") HandleChangesResult(node);
-                                if (node.Name == "ChangesResponse") HandleChangesResponse(node);
-                                if (node.Name == "ErrCode") HandleError(node.Value);
-                                if (node.Name == "ConfigGUID") CheckConfigGUID(node.Value);
-                                if (node.Name == "ConnectedDevices") HandleConnectedDevices(node);
-                                if (node.Name == "DisconnectedDevices") HandleDisconnectedDevices(node);
-                                if (node.Name == "ConnectedMBNets") HandleConnectedMBNets(node);
-                                if (node.Name == "DisconnectedMBNets") HandleDisconnectedMBNets(node);
-                                if (node.Name == "ControlCmdsResponse") HandleControlCmdsResponse(node);
-                                if (node.Name == "NumericalHWParams") HandleNumericalHWParams(node);
-                            }
-                        }
-                    }
-                    catch(Exception e)
-                    {
-                    }
-                }
-        if (Connection != connection)
-        {
-            Connection = connection;
-            if (Connection)
-                SocketClient.chText("Восстановление связи");
-            else
-                SocketClient.chText("Потеря связи");
-        }*/
     }
 }
