@@ -141,7 +141,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
-            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
+            urlConnection.setRequestProperty("Content-Type", "application/xml");
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
@@ -166,7 +166,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
         {
             if (XContent != null)
             {
-                //SocketClient.chText(new XElement("Client", new XAttribute("LocalTime", Protocol.DateFormat.format(new Date())), XContent));//todo XML
+                SocketClient.chText("Sending request");
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
             dataOutputStream.write(Content);
@@ -195,14 +195,19 @@ public class PollTask extends AsyncTask<String, Void, String> {
         return null;
     }
 
-
-    public String makeCommand( Outs aCommand){
+    /**
+     * Функия формирует строку контента для отправки
+     * @param aCommand какая команда должна быть выполнена
+     * @return возвращает сформированную строку
+     */
+    public String makeCommand(Outs aCommand){
         switch(aCommand){
             case Invert:
             case SwitchOn:
             case Impulse:
             case SwitchOff:
                 IncCID();
+                //DEVTYPE=aCommand.getDevType().getCode();
                 return "<Envelope>\n  <Body>\n    <CID>"+CID+"</CID>\n    <SIDResp>0</SIDResp>\n    <Action>"+aCommand.getCode()+"</Action>\n  </Body>\n</Envelope>";
             default:
                 IncCID();
