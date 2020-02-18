@@ -29,7 +29,7 @@ public class SocketClient {
     public void buttonClicked(String btnName, TextView textV){
         if(btnName.equals("butt1")){
 
-            textV.setText("Clicked");
+            textV.setText("Clicked1");
             tv=textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
             String textIP="192.168.1.21";
@@ -37,14 +37,12 @@ public class SocketClient {
             if(!start){
                 start=true;
                 PollTask pt=new PollTask();
-                pt.Start(textIP, textPassword);
+                pt.Start(textIP, textPassword, Outs.None);
             }
 
-        }
+        }else if(btnName.equals("butt2")){
 
-        if(btnName.equals("butt2")){
-
-            textV.setText("Clicked");
+            textV.setText("Clicked2");
             tv=textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
             String textIP="192.168.1.21";
@@ -52,9 +50,8 @@ public class SocketClient {
             if(!start){
                 start=true;
                 PollTask pt=new PollTask();
-                pt.Start(textIP, textPassword);
+                pt.Start(textIP, textPassword, Outs.Impulse);
             }
-            PollTask.sendCommand(1, 1, 1);
 
         }
     }

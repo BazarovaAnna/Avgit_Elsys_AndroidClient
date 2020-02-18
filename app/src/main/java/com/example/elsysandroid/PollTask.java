@@ -44,17 +44,19 @@ public class PollTask extends AsyncTask<String, Void, String> {
     private int responseCode;//понадобится в реализации HandleResponse
     /** Поле - нода xml кода */
     Element XContent;
+    /** Поле - команда */
+    Outs command;
 
     /**
      * Функция, инициализирующая обмен с сервером и задающая базовые значения
      * @param aServerIP IP-адрес сервера
      * @param aPassword пароль для шифрования данных
      */
-    public void Start(String aServerIP, String aPassword)
+    public void Start(String aServerIP, String aPassword, Outs command)
     {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
-
+        this.command=command;
         response = null;
 
         RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
@@ -127,7 +129,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
         }
         try {
 
-            String s = "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+            String s = makeCommand(command);
             Content = s.getBytes("UTF8");
 
             String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
@@ -194,11 +196,22 @@ public class PollTask extends AsyncTask<String, Void, String> {
     }
 
 
-    public static void sendCommand(int aID, int aDevType, int aCommand){
+    public static String makeCommand( Outs aCommand){
+        switch(aCommand){
+            case Invert:
+            case SwitchOn:
+            case Impulse:
+            case SwitchOff:
+                return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n    <SIDResp>"+aCommand.getCode()+"</SIDResp>\n  </Body>\n</Envelope>";
+            default:
+                return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+        }
+    }
 
-    }//todo FIRST
-
-    /*public void sendCommand(int aID, int aDevType, int aCommand, Date aDate){
+    public static String makeCommand(){
+        return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+    }
+    /*public void sendCommand(int aID, int aDevType, Outs aCommand, Date aDate){
 
     }*todo
 
@@ -217,7 +230,7 @@ public class PollTask extends AsyncTask<String, Void, String> {
     private void HandleResponse(int responseCode,String response)
     {
         /*boolean connection = false;
-        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like thft
+        //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
         //if (!CancelTokenSource.IsCancellationRequested)
             if (response != null)
                 if ((responseCode == 200) || (responseCode == 401))
