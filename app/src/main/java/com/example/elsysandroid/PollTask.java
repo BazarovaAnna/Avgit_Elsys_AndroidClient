@@ -196,27 +196,19 @@ public class PollTask extends AsyncTask<String, Void, String> {
     }
 
 
-    public static String makeCommand( Outs aCommand){
+    public String makeCommand( Outs aCommand){
         switch(aCommand){
             case Invert:
             case SwitchOn:
             case Impulse:
             case SwitchOff:
-                return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n    <SIDResp>"+aCommand.getCode()+"</SIDResp>\n  </Body>\n</Envelope>";
+                IncCID();
+                return "<Envelope>\n  <Body>\n    <CID>"+CID+"</CID>\n    <SIDResp>0</SIDResp>\n    <Action>"+aCommand.getCode()+"</Action>\n  </Body>\n</Envelope>";
             default:
-                return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+                IncCID();
+                return "<Envelope>\n  <Body>\n    <CID>"+CID+"</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
         }
     }
-
-    public static String makeCommand(){
-        return "<Envelope>\n  <Body>\n    <CID>10001</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
-    }
-    /*public void sendCommand(int aID, int aDevType, Outs aCommand, Date aDate){
-
-    }*todo
-
-
-
 
 
     /**
