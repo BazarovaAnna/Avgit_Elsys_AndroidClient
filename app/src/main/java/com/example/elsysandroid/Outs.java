@@ -6,26 +6,31 @@ package com.example.elsysandroid;
  * @version 1.0
  */
 public enum Outs {
-    /** Выключить */
-    SwitchOff(0),
+    /** Выключить  */
+    SwitchOff(DevType.Out,0),
     /** Импульс */
-    Impulse(1),
+    Impulse(DevType.Out,1),
     /** Включить */
-    SwitchOn(2),
+    SwitchOn(DevType.Out,2),
     /** Переключить */
-    Invert(3),
-    None(10000);
+    Invert(DevType.Out,3),
+
+    None(DevType.None,10000);
     /**
      * Поле - код состояния
      */
     private int code;
-
+    /**
+     * Поле - устройство
+     */
+    private DevType dev;
     /**
      * Функция - конструктор
      * @param code код состояния
      */
-    Outs(int code){
+    Outs(DevType dev, int code){
         this.code = code;
+        this.dev = dev;
     }
 
     /**
@@ -34,5 +39,12 @@ public enum Outs {
      */
     public int getCode(){
         return code;
+    }
+    /**
+     * Функция возвращения устройства
+     * @return возвращает устройство
+     */
+    public DevType getDevType(){
+        return dev;
     }
 }
