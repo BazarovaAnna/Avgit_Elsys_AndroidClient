@@ -81,6 +81,9 @@ public class PollTask {
      * @param aServerIP IP-адрес сервера
      * @param aPassword пароль для шифрования данных
      */
+
+    boolean stopAsyncTask = false;
+
     public void Start(String aServerIP, String aPassword) {
         this.ServerIP = aServerIP;
         this.Password = aPassword;
@@ -101,7 +104,7 @@ public class PollTask {
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                while (true){
+                while (!stopAsyncTask) {
                     PrepareRequest();
                     SendRequestAsync();
                 }
@@ -229,6 +232,7 @@ public class PollTask {
 
     /**
      * Функция формирует строку для отправления серверу
+     *
      * @param aCommand команда, которую хотим отправить
      * @return возвращает сторку для отправления
      */
@@ -249,7 +253,17 @@ public class PollTask {
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
      */
-    private void HandleResponse(int responseCode, String response) {
+    private void HandleResponse(final int responseCode, String response) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                MainActivity.codeText.setText(String.valueOf(responseCode));
+                if (responseCode == 401) {
+                    stopAsyncTask = true;
+                    SocketClient.chText("Ошибка аутентификации");
+                }
+            }
+        });
         /*boolean connection = false;
         //todo* response parse from string into some collection that has headers & content as a tree-like structure or smth like that
         //if (!CancelTokenSource.IsCancellationRequested)
