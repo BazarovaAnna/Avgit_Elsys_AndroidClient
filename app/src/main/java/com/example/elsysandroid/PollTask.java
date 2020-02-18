@@ -91,6 +91,19 @@ public class PollTask extends AsyncTask<String, Void, String> {
     }
 
     /**
+     * Функция, реализующая инкрементацию поля CommandID в некоторых пределах
+     * @return CommandID+1 или 1
+     * @see PollTask#CommandID
+     */
+    private int IncCommandID() {
+        if (CommandID < 0x40000000)
+            CommandID++;
+        else
+            CommandID = 1;
+        return CommandID;
+    }
+
+    /**
      * Функция, вызывающая подготовку запроса и отправление его
      * @see PollTask#PrepareRequest()
      * @see PollTask#SendRequestAsync()
