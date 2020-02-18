@@ -1,7 +1,5 @@
 package com.example.elsysandroid;
 
-
-import android.icu.util.LocaleData;
 import android.os.Handler;
 import android.util.Log;
 
@@ -11,7 +9,7 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
-import java.util.concurrent.locks.ReentrantLock;
+
 
 
 /**
@@ -186,7 +184,7 @@ public class PollTask {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
-            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
+
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
