@@ -1,7 +1,9 @@
 package com.example.elsysandroid;
 
 
+import android.icu.util.LocaleData;
 import android.os.Handler;
+import android.util.Log;
 
 import org.w3c.dom.Element;
 
@@ -9,12 +11,13 @@ import java.io.DataOutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Date;
+import java.util.concurrent.locks.ReentrantLock;
 
 
 /**
  * Класс для клиент-серверного обмена
  *
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
  * @version 1.0
  */
 public class PollTask {
@@ -151,7 +154,7 @@ public class PollTask {
      * {@value} now время начала формирования запроса по клиенту
      * {@value} CreationTime время начала формирования запроса по серверу
      * {@value} XContent данные в формате xml
-     * {@value} s строка, которую отправляем
+     * {@value} s строка, которую отправляем (ВРЕМЕННО!!!)
      *
      * @see Protocol#GetDigest(String, String, byte[], String)
      * @see Protocol#DateFormat
@@ -183,12 +186,14 @@ public class PollTask {
             urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
             urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
             urlConnection.setRequestProperty("Connection", "close");
+            //urlConnection.setRequestProperty("Content-Type", "application/json");todo XML
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
         } catch (Exception e) {
-            SocketClient.chText(e.getMessage());
+            e.printStackTrace();
+            stopAsyncTask = true;
         }
     }
 
@@ -204,7 +209,13 @@ public class PollTask {
     private void SendRequestAsync() {
         try {
             if (XContent != null) {
-                SocketClient.chText("Sending request");
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        SocketClient.chText("Sending request");
+                    }
+                });
+
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
             dataOutputStream.write(Content);
@@ -217,6 +228,7 @@ public class PollTask {
 
             urlConnection.disconnect();
         } catch (final Exception e) {
+            e.printStackTrace();
             handler.post(new Runnable() {
                 @Override
                 public void run() {
@@ -224,6 +236,7 @@ public class PollTask {
                     response = null;
                 }
             });
+            stopAsyncTask = true;
         }
         HandleResponse(responseCode, response);
     }
@@ -252,8 +265,8 @@ public class PollTask {
      * @see PollTask#SendRequestAsync()
      */
 
-    private void HandleResponse(int responseCode, String response) {
-        //todo FiRsT
+    private void HandleResponse(final int responseCode, String response) {
+        Log.d("Response",response+": "+response);
         handler.post(new Runnable() {
             @Override
             public void run() {
