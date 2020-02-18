@@ -145,7 +145,7 @@ public final class Protocol{
      * @return возвращает xml-элемент, готовый к отправке
      * @see Protocol#GetCommand(int, int, int, int)
      */
-    public Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID)
+    public static Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID)
     {
         try {
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -188,7 +188,7 @@ public final class Protocol{
      * @return возвращает xml-элемент, готовый к отправке
      * @see Protocol#GetCommand(int, int, int, int, Date)
      */
-    public Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
+    public static Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
         Element root = GetCommand(aID, aDevType, aCommand, aCommandID);
         Document document = root.getOwnerDocument();
 
