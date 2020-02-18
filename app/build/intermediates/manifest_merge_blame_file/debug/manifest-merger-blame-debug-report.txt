@@ -6,48 +6,47 @@
 6
 7    <uses-sdk
 8        android:minSdkVersion="15"
-8-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml
+8-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml
 9        android:targetSdkVersion="29" />
-9-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml
+9-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml
 10
 11    <uses-permission android:name="android.permission.INTERNET" />
-11-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:6:5-66
-11-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:6:22-64
+11-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:6:5-66
+11-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:6:22-64
 12
 13    <application
-13-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:8:5-23:19
+13-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:8:5-23:19
 14        android:allowBackup="true"
-14-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:9:9-35
+14-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:9:9-35
 15        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
-15-->[androidx.core:core:1.1.0] C:\Users\HukuToc2288\.gradle\caches\transforms-2\files-2.1\e9dab9c67c1ee3668e0bbf86c6d8cbd8\core-1.1.0\AndroidManifest.xml:24:18-86
+15-->[androidx.core:core:1.1.0] C:\Users\anna\.gradle\caches\transforms-2\files-2.1\e9dab9c67c1ee3668e0bbf86c6d8cbd8\core-1.1.0\AndroidManifest.xml:24:18-86
 16        android:debuggable="true"
 17        android:icon="@mipmap/ic_launcher"
-17-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:10:9-43
+17-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:10:9-43
 18        android:label="@string/app_name"
-18-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:11:9-41
+18-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:11:9-41
 19        android:roundIcon="@mipmap/ic_launcher_round"
-19-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:12:9-54
+19-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:12:9-54
 20        android:supportsRtl="true"
-20-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:13:9-35
-21        android:testOnly="true"
-22        android:theme="@style/AppTheme"
-22-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:15:9-40
-23        android:usesCleartextTraffic="true" >
-23-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:14:9-44
-24        <activity android:name="com.example.elsysandroid.MainActivity" >
-24-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:17:9-22:20
-24-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:17:19-47
-25            <intent-filter>
-25-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:18:13-21:29
-26                <action android:name="android.intent.action.MAIN" />
-26-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:19:17-69
-26-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:19:25-66
-27
-28                <category android:name="android.intent.category.LAUNCHER" />
-28-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:20:17-77
-28-->D:\AndroidStudioProjects\AndroidClient\app\src\main\AndroidManifest.xml:20:27-74
-29            </intent-filter>
-30        </activity>
-31    </application>
-32
-33</manifest>
+20-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:13:9-35
+21        android:theme="@style/AppTheme"
+21-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:15:9-40
+22        android:usesCleartextTraffic="true" >
+22-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:14:9-44
+23        <activity android:name="com.example.elsysandroid.MainActivity" >
+23-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:17:9-22:20
+23-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:17:19-47
+24            <intent-filter>
+24-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:18:13-21:29
+25                <action android:name="android.intent.action.MAIN" />
+25-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:19:17-69
+25-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:19:25-66
+26
+27                <category android:name="android.intent.category.LAUNCHER" />
+27-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:20:17-77
+27-->C:\Users\anna\AndroidStudioProjects\CliSer\app\src\main\AndroidManifest.xml:20:27-74
+28            </intent-filter>
+29        </activity>
+30    </application>
+31
+32</manifest>

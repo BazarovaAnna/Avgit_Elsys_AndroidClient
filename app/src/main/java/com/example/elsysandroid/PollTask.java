@@ -123,6 +123,20 @@ public class PollTask {
         return CID;
     }
 
+    /**
+     * Функция, реализующая инкрементацию поля CommandID в некоторых пределах
+     *
+     * @return CommandID+1 или 1
+     * @see PollTask#CommandID
+     */
+    private int IncCommandID() {
+        if (CommandID < 0x40000000)
+            CommandID++;
+        else
+            CommandID = 1;
+        return CommandID;
+    }
+
 
     /**
      * Функция подготовки запроса
@@ -214,15 +228,10 @@ public class PollTask {
      */
     public String makeCommand(Outs aCommand) {
         switch (aCommand) {
-            case Invert:
-            case SwitchOn:
-            case Impulse:
-            case SwitchOff:
-                IncCID();
-                return "<Envelope>\n  <Body>\n    <CID>" + CID + "</CID>\n    <SIDResp>0</SIDResp>\n    <Action>" + aCommand.getCode() + "</Action>\n  </Body>\n</Envelope>";
+            case None:
+                return Protocol.toString(Protocol.GetXContent(IncCID(), SID));
             default:
-                IncCID();
-                return "<Envelope>\n  <Body>\n    <CID>" + CID + "</CID>\n    <SIDResp>0</SIDResp>\n  </Body>\n</Envelope>";
+                return Protocol.toString(Protocol.GetXContent(IncCID(), SID, Protocol.GetCommand(0, aCommand.getDevType().getCode(), aCommand.getCode(), IncCommandID())));
         }
     }
 
@@ -288,5 +297,4 @@ public class PollTask {
                 SocketClient.chText("Потеря связи");
         }*/
     }
-
 }
