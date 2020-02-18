@@ -15,6 +15,7 @@ public class SocketClient {
      * @see MainActivity
      */
     private static TextView tv;
+    private PollTask pollTask;
 
     /**
      * Функция, выполняющаяся при нажатии на кнопку. В случае нажатия на кнопку с ID "butt1" - начинается http-обмен.
@@ -24,35 +25,29 @@ public class SocketClient {
      * {@value} textIP IP адрес сервера
      * {@value} textPassword пароль для шифрования
      * {@value} pt экземпляр класса для клиент-серверного обмена
-     * @see PollTask#Start(String, String, Outs)
+     * @see PollTask#Start(String, String)
      */
-    public void buttonClicked(String btnName, TextView textV){
-        if(btnName.equals("butt1")){
+    public void buttonClicked(String btnName, TextView textV) {
+        if (btnName.equals("butt1")) {
 
             textV.setText("Clicked1");
-            tv=textV;
+            tv = textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
-            String textIP="192.168.1.21";
-            String textPassword="12345678";
-            if(!start){
-                start=true;
-                PollTask pt=new PollTask();
-                pt.Start(textIP, textPassword, Outs.None);
+            String textIP = "192.168.1.21";
+            String textPassword = "12345678";
+            if (!start) {
+                start = true;
+                pollTask = new PollTask();
+                pollTask.Start(textIP, textPassword);
             }
 
-        }else if(btnName.equals("butt2")){
+        } else if (btnName.equals("butt2")) {
 
             textV.setText("Clicked2");
-            tv=textV;
-            //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
-            String textIP="192.168.1.21";
-            String textPassword="12345678";
-            if(!start){
-                start=true;
-                PollTask pt=new PollTask();
-                pt.Start(textIP, textPassword, Outs.Impulse);
+            tv = textV;
+            if (start) {
+                pollTask.sendCommand(Outs.Impulse);
             }
-
         }
     }
 
