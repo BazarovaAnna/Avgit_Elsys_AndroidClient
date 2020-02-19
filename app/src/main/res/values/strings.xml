@@ -3,4 +3,15 @@
     <string name="ip_malformed">Malformed IP address</string>
     <string name="cant_connect">IP address unreachable</string>
     <string name="need_auth">You are not authorized to do this</string>
+    <string name="start">Start</string>
+    <string name="impulse">Impulse</string>
+    <string name="sw_off">Switch OFF</string>
+    <string name="sw_on">Switch ON</string>
+    <string name="inv">Invert</string>
+    <string name="msg">message</string>
+    <string name="code">Response Code</string>
+    <string name="addr">IP Address</string>
+    <string name="ip">192.168.1.21</string>
+    <string name="pass">12345678</string>
+    <string name="passwd">Password</string>
 </resources>
