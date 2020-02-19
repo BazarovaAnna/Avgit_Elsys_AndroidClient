@@ -4,42 +4,56 @@
     android:layout_height="match_parent">
 
     <Button
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
+        android:layout_below="@id/passwordText"
         android:id="@+id/btnClick_view"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="Start"
-        android:textSize="20sp"
         android:layout_alignParentRight="true" />
 
     <Button
+        android:layout_below="@id/btnClick_view"
         android:id="@+id/btnClick_imp"
-        android:layout_width="100dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:text="impulse"
-        android:textSize="20sp" />
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Impulse" />
+
+    <Button
+        android:id="@+id/btnClick_swoff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_imp"
+        android:text="Swith off" />
+    <Button
+        android:layout_below="@id/btnClick_swoff"
+        android:id="@+id/btnClick_swon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Switch on" />
+
+    <Button
+        android:id="@+id/btnClick_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_swon"
+        android:text="Invert" />
 
     <TextView
         android:id="@+id/lbl_view"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-
-        android:text="Dev Field"
-
-        />
+        android:layout_alignParentBottom="true"
+        android:text="Dev Field" />
 
     <TextView
         android:gravity="center"
         android:id="@+id/code_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@+id/btnClick_view"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Код ответа"
+
+        android:layout_above="@id/lbl_view"
+        android:text="Response code"
         android:textColor="#000"
         android:textSize="16sp" />
 
@@ -52,4 +66,43 @@
 
         />
 
+    <TextView
+        android:layout_alignBottom="@+id/addressText"
+        android:layout_alignTop="@id/addressText"
+        android:layout_alignRight="@id/textView2"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Address" />
+
+    <EditText
+        android:id="@+id/addressText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/textView"
+        android:layout_toRightOf="@+id/textView"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="192.168.1.21" />
+    <TextView
+        android:layout_below="@+id/textView"
+        android:gravity="center_vertical"
+        android:layout_alignBottom="@+id/passwordText"
+        android:layout_alignTop="@id/passwordText"
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password" />
+
+    <EditText
+        android:layout_below="@id/addressText"
+        android:id="@+id/passwordText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2"
+        android:ems="10"
+        android:text="12345678" />
 </RelativeLayout>

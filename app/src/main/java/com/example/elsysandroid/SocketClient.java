@@ -39,6 +39,7 @@ public class SocketClient {
                 start = true;
                 pollTask = new PollTask();
                 pollTask.start(textIP, textPassword);
+                pollTask.sendCommand(Outs.None);
             }
 
         } else if (btnName.equals("butt2")) {

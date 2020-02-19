@@ -11,7 +11,6 @@ import java.net.URL;
 import java.util.Date;
 
 
-
 /**
  * Класс для клиент-серверного обмена
  *
@@ -67,7 +66,7 @@ public class PollTask {
     /**
      * Поле - нода xml кода
      */
-    Element xContent;
+
     /**
      * Поле - команда
      */
@@ -99,22 +98,7 @@ public class PollTask {
         terminated = false;
 
         SocketClient.chText("Начало опроса");
-
         handler = new Handler();
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                while (!stopAsyncTask) {
-                    prepareRequest();
-                    sendRequestAsync();
-                }
-            }
-        });
-        thread.start();
-    }
-
-    public synchronized void sendCommand(Outs command) {
-        this.command = command;
     }
 
     /**
@@ -157,9 +141,10 @@ public class PollTask {
      * @see Protocol#getDigest(String, String, byte[], String)
      * @see Protocol#DATE_FORMAT
      */
-    private synchronized void prepareRequest() {
+    public synchronized void sendCommand(Outs command) {
         String nonce = Protocol.getNonce();
         Date now = new Date();
+        Element xContent;
 
         String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
@@ -168,7 +153,6 @@ public class PollTask {
             xContent = Protocol.getXContent(incCID(), SID, now);
         } else if (command != Outs.None) {
             xContent = makeCommand(command);
-            command = Outs.None;
         } else {
             xContent = Protocol.getXContent(incCID(), SID);
         }
@@ -189,9 +173,9 @@ public class PollTask {
 
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
+            SendRequestAsync(xContent, content);
         } catch (Exception e) {
             e.printStackTrace();
-            stopAsyncTask = true;
         }
     }
 
@@ -204,39 +188,45 @@ public class PollTask {
      *
      * @see PollTask#handleResponse(int, String)
      */
-    private void sendRequestAsync() {
-        try {
-            if (xContent != null) {
-                handler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        SocketClient.chText("Sending request");
-                    }
-                });
-
-            }
-            DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
-            dataOutputStream.write(content);
-
-            dataOutputStream.flush();
-            dataOutputStream.close();
-
-            responseCode = urlConnection.getResponseCode();
-            response = urlConnection.getResponseMessage();
-
-            urlConnection.disconnect();
-        } catch (final Exception e) {
-            e.printStackTrace();
+    private void SendRequestAsync(final Element xContent, final byte[] content) {
+        if (xContent != null) {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    SocketClient.chText(e.getMessage());
-                    response = null;
+                    SocketClient.chText("Sending request");
                 }
             });
-            stopAsyncTask = true;
+
         }
-        handleResponse(responseCode, response);
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
+                    dataOutputStream.write(content);
+
+                    dataOutputStream.flush();
+                    dataOutputStream.close();
+
+                    responseCode = urlConnection.getResponseCode();
+                    response = urlConnection.getResponseMessage();
+
+                    urlConnection.disconnect();
+                } catch (final Exception e) {
+                    e.printStackTrace();
+                    handler.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            SocketClient.chText(e.getMessage());
+                            response = null;
+                        }
+                    });
+                    stopAsyncTask = true;
+                }
+                handleResponse(responseCode, response);
+            }
+        });
+        thread.start();
     }
 
     /**
@@ -264,7 +254,7 @@ public class PollTask {
      */
 
     private void handleResponse(final int responseCode, String response) {
-        Log.d("Response",response+": "+response);
+        Log.d("Response", response + ": " + response);
         handler.post(new Runnable() {
             @Override
             public void run() {
