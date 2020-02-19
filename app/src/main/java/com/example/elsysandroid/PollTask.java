@@ -15,18 +15,18 @@ import java.util.Date;
 /**
  * Класс для клиент-серверного обмена
  *
- * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey
+ * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
 public class PollTask {
     /**
      * Поля, содержащие IP сервера и пароль для шифрования
      */
-    String ServerIP, Password;
+    String serverIP, password;
     /**
      * Поле, показывающее, установлено ли соединение
      */
-    boolean Connection;
+    boolean connection;
     /**
      * Поля, соответствующие Client ID и Server ID
      */
@@ -34,19 +34,19 @@ public class PollTask {
     /**
      * Поле, соответствующее ID команды
      */
-    int CommandID;
+    int commandID;
     /**
      * Поля, показывающее, была ли связь разорвана
      */
-    boolean Terminated;
+    boolean terminated;
     /**
      * Поле контента - тела отправляемого сообщения
      */
-    private byte[] Content;
+    private byte[] content;
     /**
      * Поле, содержащее URI запроса
      */
-    String RequestUri;
+    String requestUri;
 
     /**
      * Поле - Http соединение с сервером
@@ -55,19 +55,19 @@ public class PollTask {
     /**
      * Поле для корректирования локального времени под серверное
      */
-    long TimeCorrection;//понадобится в реализации HandleResponse
+    long timeCorrection;
     /**
      * Поле - ответ сервера в виде строки
      */
-    private String response;//понадобится в реализации HandleResponse
+    private String response;
     /**
      * Поле - код возврата (200 - ок)
      */
-    private int responseCode;//понадобится в реализации HandleResponse
+    private int responseCode;
     /**
      * Поле - нода xml кода
      */
-    Element XContent;
+    Element xContent;
     /**
      * Поле - команда
      */
@@ -84,19 +84,19 @@ public class PollTask {
 
     boolean stopAsyncTask = false;
 
-    public void Start(String aServerIP, String aPassword) {
-        this.ServerIP = aServerIP;
-        this.Password = aPassword;
+    public void start(String aServerIP, String aPassword) {
+        this.serverIP = aServerIP;
+        this.password = aPassword;
         this.command = Outs.None;
         response = null;
 
-        RequestUri = String.format("http://%s%s", ServerIP, Protocol.URL);
+        requestUri = String.format("http://%s%s", serverIP, Protocol.URL);
 
-        Connection = false;
+        connection = false;
         CID = 10000;
         SID = 0;
-        CommandID = 10000;
-        Terminated = false;
+        commandID = 10000;
+        terminated = false;
 
         SocketClient.chText("Начало опроса");
 
@@ -105,8 +105,8 @@ public class PollTask {
             @Override
             public void run() {
                 while (!stopAsyncTask) {
-                    PrepareRequest();
-                    SendRequestAsync();
+                    prepareRequest();
+                    sendRequestAsync();
                 }
             }
         });
@@ -123,7 +123,7 @@ public class PollTask {
      * @return CID+1 или 1
      * @see PollTask#CID
      */
-    private int IncCID() {
+    private int incCID() {
         if (CID < 0x40000000)
             CID++;
         else
@@ -135,14 +135,14 @@ public class PollTask {
      * Функция, реализующая инкрементацию поля CommandID в некоторых пределах
      *
      * @return CommandID+1 или 1
-     * @see PollTask#CommandID
+     * @see PollTask#commandID
      */
-    private int IncCommandID() {
-        if (CommandID < 0x40000000)
-            CommandID++;
+    private int incCommandID() {
+        if (commandID < 0x40000000)
+            commandID++;
         else
-            CommandID = 1;
-        return CommandID;
+            commandID = 1;
+        return commandID;
     }
 
 
@@ -154,35 +154,35 @@ public class PollTask {
      * {@value} XContent данные в формате xml
      * {@value} s строка, которую отправляем
      *
-     * @see Protocol#GetDigest(String, String, byte[], String)
-     * @see Protocol#DateFormat
+     * @see Protocol#getDigest(String, String, byte[], String)
+     * @see Protocol#DATE_FORMAT
      */
-    private synchronized void PrepareRequest() {
-        String Nonce = Protocol.GetNonce();
+    private synchronized void prepareRequest() {
+        String nonce = Protocol.getNonce();
         Date now = new Date();
 
-        String CreationTime = Protocol.DateFormat.format(new Date(now.getTime() + TimeCorrection));
+        String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
-        if (Math.abs(TimeCorrection) > 5) {
+        if (Math.abs(timeCorrection) > 5) {
             SocketClient.chText("Синхронизация времени");
-            XContent = Protocol.GetXContent(IncCID(), SID, now);
+            xContent = Protocol.getXContent(incCID(), SID, now);
         } else if (command != Outs.None) {
-            XContent = makeCommand(command);
+            xContent = makeCommand(command);
             command = Outs.None;
         } else {
-            XContent = Protocol.GetXContent(IncCID(), SID);
+            xContent = Protocol.getXContent(incCID(), SID);
         }
         try {
-            Content = Protocol.toString(XContent).getBytes("UTF8");
+            content = Protocol.toString(xContent).getBytes("UTF8");
 
-            String Digest = Protocol.GetDigest(Nonce, Password, Content, CreationTime);
+            String Digest = Protocol.getDigest(nonce, password, content, creationTime);
 
-            URL url = new URL(String.format("http://%s%s", ServerIP, Protocol.URL));
+            URL url = new URL(String.format("http://%s%s", serverIP, Protocol.URL));
             urlConnection = (HttpURLConnection) url.openConnection();
 
             urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", Nonce, CreationTime, Digest));
-            urlConnection.setRequestProperty("Date", Protocol.LocalDateFormat.format(now));
+            urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
+            urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
             urlConnection.setRequestProperty("Connection", "close");
 
             urlConnection.setRequestProperty("Accept-Encoding", "identity");
@@ -202,11 +202,11 @@ public class PollTask {
      * {@value} responseCode код возврата
      * {@value} response ответ сервера в виде строки
      *
-     * @see PollTask#HandleResponse(int, String)
+     * @see PollTask#handleResponse(int, String)
      */
-    private void SendRequestAsync() {
+    private void sendRequestAsync() {
         try {
-            if (XContent != null) {
+            if (xContent != null) {
                 handler.post(new Runnable() {
                     @Override
                     public void run() {
@@ -216,7 +216,7 @@ public class PollTask {
 
             }
             DataOutputStream dataOutputStream = new DataOutputStream(urlConnection.getOutputStream());
-            dataOutputStream.write(Content);
+            dataOutputStream.write(content);
 
             dataOutputStream.flush();
             dataOutputStream.close();
@@ -236,7 +236,7 @@ public class PollTask {
             });
             stopAsyncTask = true;
         }
-        HandleResponse(responseCode, response);
+        handleResponse(responseCode, response);
     }
 
     /**
@@ -247,9 +247,9 @@ public class PollTask {
      */
     private Element makeCommand(Outs aCommand) {
         if (aCommand == Outs.None) {
-            return Protocol.GetXContent(IncCID(), SID);
+            return Protocol.getXContent(incCID(), SID);
         }
-        return Protocol.GetXContent(IncCID(), SID, Protocol.GetCommand(8, aCommand.getDevType().getCode(), aCommand.getCode(), IncCommandID()));
+        return Protocol.getXContent(incCID(), SID, Protocol.getCommand(8, aCommand.getDevType().getCode(), aCommand.getCode(), incCommandID()));
     }
 
 
@@ -259,11 +259,11 @@ public class PollTask {
      *
      * @param responseCode код возврата
      * @param response     ответ сервера в виде строки
-     * @see PollTask#PrepareRequest()
-     * @see PollTask#SendRequestAsync()
+     * @see PollTask#prepareRequest()
+     * @see PollTask#sendRequestAsync()
      */
 
-    private void HandleResponse(final int responseCode, String response) {
+    private void handleResponse(final int responseCode, String response) {
         Log.d("Response",response+": "+response);
         handler.post(new Runnable() {
             @Override

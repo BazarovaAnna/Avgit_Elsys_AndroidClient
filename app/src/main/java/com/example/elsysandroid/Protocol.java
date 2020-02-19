@@ -33,12 +33,12 @@ public final class Protocol{
     public static final String URL = "/xmlapi/std";
 
     /** Поле - формат серверных даты-времени для конвертации в строку */
-    public static final SimpleDateFormat DateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     /** Поле - формат локальных даты-времени для конвертации в строку */
-    public static final SimpleDateFormat LocalDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+    public static final SimpleDateFormat LOCAL_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     /** Задаем Time Zone */
     static {
-        DateFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+        DATE_FORMAT.setTimeZone(TimeZone.getTimeZone("UTC"));
     }
 
     /**
@@ -68,9 +68,9 @@ public final class Protocol{
      * @param aCID ID клиента
      * @param aSIDResp ID ответа сервера
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetXContent(int, int, Date)
+     * @see Protocol#getXContent(int, int, Date)
      */
-    public static Element GetXContent(int aCID, int aSIDResp) {
+    public static Element getXContent(int aCID, int aSIDResp) {
         try {
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
             DocumentBuilder documentBuilder = documentFactory.newDocumentBuilder();
@@ -103,10 +103,10 @@ public final class Protocol{
      * @param aSIDResp ID ответа сервера
      * @param date скорректированное время
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetXContent(int, int, Date)
+     * @see Protocol#getXContent(int, int, Date)
      */
-    public static Element GetXContent(int aCID, int aSIDResp, Date date) {
-        Element root = GetXContent(aCID, aSIDResp);
+    public static Element getXContent(int aCID, int aSIDResp, Date date) {
+        Element root = getXContent(aCID, aSIDResp);
         Element body = (Element) root.getElementsByTagName("Body").item(0);
         Document document = root.getOwnerDocument();
 
@@ -114,11 +114,11 @@ public final class Protocol{
         body.appendChild(setDateTime);
 
         Element localTime = document.createElement("LocalTime");
-        localTime.appendChild(document.createTextNode(LocalDateFormat.format(date)));
+        localTime.appendChild(document.createTextNode(LOCAL_DATE_FORMAT.format(date)));
         setDateTime.appendChild(localTime);
 
         Element utcTime = document.createElement("UTCTime");
-        utcTime.appendChild(document.createTextNode(DateFormat.format(date)));
+        utcTime.appendChild(document.createTextNode(DATE_FORMAT.format(date)));
         setDateTime.appendChild(utcTime);
 
         return root;
@@ -130,11 +130,11 @@ public final class Protocol{
      * @param aSIDResp ID ответа сервера
      * @param aInitData xml-элемент, добавляемый в запрос
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetXContent(int, int, Element)
+     * @see Protocol#getXContent(int, int, Element)
      */
-    public static Element GetXContent(int aCID, int aSIDResp, Element aInitData)
+    public static Element getXContent(int aCID, int aSIDResp, Element aInitData)
     {
-        Element root = GetXContent(aCID, aSIDResp);
+        Element root = getXContent(aCID, aSIDResp);
         Document document = root.getOwnerDocument();
 
         Element body = (Element) root.getElementsByTagName("Body").item(0);
@@ -150,9 +150,9 @@ public final class Protocol{
      * @param aCommand тип команды
      * @param aCommandID номер команды
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetCommand(int, int, int, int)
+     * @see Protocol#getCommand(int, int, int, int)
      */
-    public static Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID)
+    public static Element getCommand(int aID, int aDevType, int aCommand, int aCommandID)
     {
         try {
             DocumentBuilderFactory documentFactory = DocumentBuilderFactory.newInstance();
@@ -196,14 +196,14 @@ public final class Protocol{
      * @param aCommandID номер команды
      * @param aDate время создания команды
      * @return возвращает xml-элемент, готовый к отправке
-     * @see Protocol#GetCommand(int, int, int, int, Date)
+     * @see Protocol#getCommand(int, int, int, int, Date)
      */
-    public static Element GetCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
-        Element root = GetCommand(aID, aDevType, aCommand, aCommandID);
+    public static Element getCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
+        Element root = getCommand(aID, aDevType, aCommand, aCommandID);
         Document document = root.getOwnerDocument();
 
         Element date = document.createElement("DateTime");
-        date.appendChild(document.createTextNode(DateFormat.format(aDate)));
+        date.appendChild(document.createTextNode(DATE_FORMAT.format(aDate)));
         root.appendChild(date);
 
         return root;
@@ -213,7 +213,7 @@ public final class Protocol{
      * Функция для формирования случайной последовательности из 20 байт
      * @return возвращает случайную последовательность из 20 байт
      */
-    public static String GetNonce(){
+    public static String getNonce(){
         byte[] nonce = new byte[20];
         Random random = new Random();
         random.nextBytes(nonce);
@@ -229,7 +229,7 @@ public final class Protocol{
      * @return возвращает зашифрованную строку
      * @see PollTask
      */
-    public static String GetDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
+    public static String getDigest(String aNonce, String aPassword, byte[] aContent, String aCreationTime){
         try {
             // Get an hmac_sha1 key from the raw key bytes
             byte[] keyBytes = aPassword.getBytes();

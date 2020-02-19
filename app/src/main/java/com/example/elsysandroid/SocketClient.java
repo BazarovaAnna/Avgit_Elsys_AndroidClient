@@ -25,7 +25,7 @@ public class SocketClient {
      * {@value} textIP IP адрес сервера
      * {@value} textPassword пароль для шифрования
      * {@value} pt экземпляр класса для клиент-серверного обмена
-     * @see PollTask#Start(String, String)
+     * @see PollTask#start(String, String)
      */
     public void buttonClicked(String btnName, TextView textV) {
         if (btnName.equals("butt1")) {
@@ -38,7 +38,7 @@ public class SocketClient {
             if (!start) {
                 start = true;
                 pollTask = new PollTask();
-                pollTask.Start(textIP, textPassword);
+                pollTask.start(textIP, textPassword);
             }
 
         } else if (btnName.equals("butt2")) {
