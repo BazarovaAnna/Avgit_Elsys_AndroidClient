@@ -32,13 +32,6 @@
         android:layout_height="wrap_content"
         android:text="@string/sw_on" />
 
-    <Button
-        android:id="@+id/btnClick_inv"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/btnClick_swon"
-        android:text="@string/inv" />
-
     <TextView
         android:id="@+id/lbl_view"
         android:layout_width="wrap_content"

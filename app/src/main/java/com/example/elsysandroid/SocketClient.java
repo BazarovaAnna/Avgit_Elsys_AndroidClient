@@ -14,7 +14,7 @@ public class SocketClient {
     /** Поле для вывода текста на экран
      * @see MainActivity
      */
-    private static TextView tv;
+    private static TextView tv=MainActivity.textV;
     private PollTask pollTask;
     private static String log;
 
@@ -31,8 +31,6 @@ public class SocketClient {
     public void buttonClicked(String btnName, TextView textV) {
         if (btnName.equals("start")) {
 
-            textV.setText("start Clicked");
-            tv = textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
             String textIP = "192.168.1.21";
             String textPassword = "12345678";
@@ -45,29 +43,21 @@ public class SocketClient {
 
         } else if (btnName.equals("impulse")) {
 
-            textV.setText("impulse Clicked");
-            tv = textV;
-            if (start) {
+             if (start) {
                 pollTask.sendCommand(Outs.Impulse);
             }
         }else if (btnName.equals("on")) {
 
-            textV.setText("switch on Clicked");
-            tv = textV;
             if (start) {
                 pollTask.sendCommand(Outs.SwitchOn);
             }
         }else if (btnName.equals("off")) {
 
-            textV.setText("switch off Clicked");
-            tv = textV;
             if (start) {
                 pollTask.sendCommand(Outs.SwitchOff);
             }
         }else if (btnName.equals("invert")) {
 
-            textV.setText("invert Clicked");
-            tv = textV;
             if (start) {
                 pollTask.sendCommand(Outs.Invert);
             }

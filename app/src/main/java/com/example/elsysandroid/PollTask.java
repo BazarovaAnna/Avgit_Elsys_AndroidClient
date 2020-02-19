@@ -95,7 +95,7 @@ public class PollTask {
         commandID = 10000;
         terminated = false;
 
-        SocketClient.chText("Начало опроса");
+        //SocketClient.chText("Начало опроса");
         handler = new Handler();
     }
 
@@ -147,7 +147,7 @@ public class PollTask {
         String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
         if (Math.abs(timeCorrection) > 5) {
-            SocketClient.chText("Синхронизация времени");
+            //SocketClient.chText("Синхронизация времени");
             xContent = Protocol.getXContent(incCID(), SID, now);
         } else if (command != Outs.None) {
             xContent = makeCommand(command);
@@ -192,7 +192,7 @@ public class PollTask {
             handler.post(new Runnable() {
                 @Override
                 public void run() {
-                    SocketClient.chText("Sending request");
+                    //SocketClient.chText("Sending request");
                 }
             });
 

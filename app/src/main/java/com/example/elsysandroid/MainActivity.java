@@ -15,6 +15,7 @@ import android.widget.TextView;
 public class MainActivity extends AppCompatActivity {
 
     public static TextView codeText;
+    public static TextView textV;
 
     /**
      * Метод, связывающий java-компоненты с объектами на экране android.
@@ -31,12 +32,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Button btnClick= (Button) findViewById(R.id.btnClick_view);
-        final TextView textV = (TextView) findViewById(R.id.lbl_view);
+        textV = (TextView) findViewById(R.id.lbl_view);
 
         Button btnImp = (Button) findViewById(R.id.btnClick_imp);
         Button btnOn = (Button) findViewById(R.id.btnClick_swon);
         Button btnOff = (Button) findViewById(R.id.btnClick_swoff);
-        Button btnInv = (Button) findViewById(R.id.btnClick_inv);
         codeText = findViewById(R.id.code_view);
 
 
@@ -68,11 +68,5 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        btnInv.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sc.buttonClicked("inverse", textV);
-            }
-        });
     }
 }
