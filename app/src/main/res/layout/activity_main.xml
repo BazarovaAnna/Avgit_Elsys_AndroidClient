@@ -10,27 +10,31 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:text="Start"
-        android:layout_alignParentRight="true" />
+        android:layout_alignParentRight="true"
+        android:onClick="onStartButtonClick"/>
 
     <Button
         android:layout_below="@id/btnClick_view"
         android:id="@+id/btnClick_imp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Impulse" />
+        android:text="Impulse"
+        android:onClick="onImpulseButtonClick"/>
 
     <Button
         android:id="@+id/btnClick_swoff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnClick_imp"
-        android:text="Swith off" />
+        android:text="Swith off"
+        android:onClick="onSwoffButtonClick"/>
     <Button
         android:layout_below="@id/btnClick_swoff"
         android:id="@+id/btnClick_swon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Switch on" />
+        android:text="Switch on"
+        android:onClick="onSwonButtonClick"/>
 
     <Button
         android:id="@+id/btnClick_inv"
