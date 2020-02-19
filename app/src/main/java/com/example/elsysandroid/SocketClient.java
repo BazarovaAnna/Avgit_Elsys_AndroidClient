@@ -16,6 +16,7 @@ public class SocketClient {
      */
     private static TextView tv;
     private PollTask pollTask;
+    private static String log;
 
     /**
      * Функция, выполняющаяся при нажатии на кнопку. В случае нажатия на кнопку с ID "butt1" - начинается http-обмен.
@@ -78,6 +79,6 @@ public class SocketClient {
      * @param str текст, который хотим отобразить
      */
     public static void chText(String str){
-        tv.setText(str);
+        tv.setText(log);
     }
 }
