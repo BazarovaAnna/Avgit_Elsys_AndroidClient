@@ -137,7 +137,8 @@ public final class Protocol{
         Element root = getXContent(aCID, aSIDResp);
         Document document = root.getOwnerDocument();
 
-        root.appendChild(document.adoptNode(aInitData.cloneNode(true)));
+        Element body = (Element) root.getElementsByTagName("Body").item(0);
+        body.appendChild(document.adoptNode(aInitData.cloneNode(true)));
 
         return root;
     }
@@ -178,7 +179,7 @@ public final class Protocol{
 
             Element id = document.createElement("ID");
             id.appendChild(document.createTextNode(Integer.toString(aCommandID)));
-            root.appendChild(id);
+            controlCmd.appendChild(id);
 
             return root;
         } catch (ParserConfigurationException e) {
@@ -200,7 +201,6 @@ public final class Protocol{
     public static Element getCommand(int aID, int aDevType, int aCommand, int aCommandID, Date aDate) {
         Element root = getCommand(aID, aDevType, aCommand, aCommandID);
         Document document = root.getOwnerDocument();
-
         Element date = document.createElement("DateTime");
         date.appendChild(document.createTextNode(DATE_FORMAT.format(aDate)));
         root.appendChild(date);
