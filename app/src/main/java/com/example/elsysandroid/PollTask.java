@@ -252,7 +252,7 @@ public class PollTask {
      */
 
     private void handleResponse(final int responseCode, String response) {
-        Log.d("Response", response + ": " + response);
+        Log.d("Response", responseCode + ": " + response);
         handler.post(new Runnable() {
             @Override
             public void run() {
@@ -260,6 +260,10 @@ public class PollTask {
                 if (responseCode == 401) {
                     stopAsyncTask = true;
                     SocketClient.chText("Ошибка аутентификации");
+                }else if (responseCode == 200) {
+                    SocketClient.chText("OK");
+                }else if (responseCode == 0) {
+                    SocketClient.chText("Ошибка подключения");
                 }
             }
         });
