@@ -8,7 +8,7 @@
     <string name="msg">message</string>
     <string name="code">Response Code</string>
     <string name="addr">IP Address</string>
-    <string name="ip">192.168.1.21</string>
-    <string name="pass">12345678</string>
+    <string name="default_ip">192.168.1.21</string>
+    <string name="default_password">12345678</string>
     <string name="passwd">Password</string>
 </resources>

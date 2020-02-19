@@ -70,7 +70,7 @@
         android:layout_toRightOf="@+id/textView"
         android:ems="10"
         android:inputType="textPersonName"
-        android:text="@string/ip" />
+        android:text="@string/default_ip" />
     <TextView
         android:layout_below="@+id/textView"
         android:gravity="center_vertical"
@@ -89,5 +89,5 @@
         android:layout_toEndOf="@+id/textView2"
         android:layout_toRightOf="@+id/textView2"
         android:ems="10"
-        android:text="@string/pass" />
+        android:text="@string/default_password" />
 </RelativeLayout>
