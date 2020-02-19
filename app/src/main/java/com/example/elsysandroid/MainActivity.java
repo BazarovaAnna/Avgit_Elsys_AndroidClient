@@ -34,6 +34,9 @@ public class MainActivity extends AppCompatActivity {
         final TextView textV = (TextView) findViewById(R.id.text_view);
 
         Button btnImp = (Button) findViewById(R.id.btnClick_imp);
+        Button btnOn = (Button) findViewById(R.id.btnClick_swon);
+        Button btnOff = (Button) findViewById(R.id.btnClick_swoff);
+        Button btnInv = (Button) findViewById(R.id.btnClick_inv);
         codeText = findViewById(R.id.code_view);
 
 
@@ -41,16 +44,35 @@ public class MainActivity extends AppCompatActivity {
         btnClick.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sc.buttonClicked("butt1", textV);
+                sc.buttonClicked("start", textV);
             }
         });
 
         btnImp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                sc.buttonClicked("butt2", textV);
+                sc.buttonClicked("impulse", textV);
             }
         });
 
+        btnOn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sc.buttonClicked("on", textV);
+            }
+        });
+        btnOff.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sc.buttonClicked("off", textV);
+            }
+        });
+
+        btnInv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sc.buttonClicked("inverse", textV);
+            }
+        });
     }
 }

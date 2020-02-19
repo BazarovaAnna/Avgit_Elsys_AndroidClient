@@ -28,9 +28,9 @@ public class SocketClient {
      * @see PollTask#start(String, String)
      */
     public void buttonClicked(String btnName, TextView textV) {
-        if (btnName.equals("butt1")) {
+        if (btnName.equals("start")) {
 
-            textV.setText("Clicked1");
+            textV.setText("start Clicked");
             tv = textV;
             //сюда поместить обработчик события - что именно мы хотим сделать по кнопке
             String textIP = "192.168.1.21";
@@ -42,12 +42,33 @@ public class SocketClient {
                 pollTask.sendCommand(Outs.None);
             }
 
-        } else if (btnName.equals("butt2")) {
+        } else if (btnName.equals("impulse")) {
 
-            textV.setText("Clicked2");
+            textV.setText("impulse Clicked");
             tv = textV;
             if (start) {
                 pollTask.sendCommand(Outs.Impulse);
+            }
+        }else if (btnName.equals("on")) {
+
+            textV.setText("switch on Clicked");
+            tv = textV;
+            if (start) {
+                pollTask.sendCommand(Outs.SwitchOn);
+            }
+        }else if (btnName.equals("off")) {
+
+            textV.setText("switch off Clicked");
+            tv = textV;
+            if (start) {
+                pollTask.sendCommand(Outs.SwitchOff);
+            }
+        }else if (btnName.equals("invert")) {
+
+            textV.setText("invert Clicked");
+            tv = textV;
+            if (start) {
+                pollTask.sendCommand(Outs.Invert);
             }
         }
     }

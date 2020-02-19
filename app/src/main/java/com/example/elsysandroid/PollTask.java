@@ -63,9 +63,7 @@ public class PollTask {
      * Поле - код возврата (200 - ок)
      */
     private int responseCode;
-    /**
-     * Поле - нода xml кода
-     */
+
 
     /**
      * Поле - команда
@@ -173,7 +171,7 @@ public class PollTask {
 
             urlConnection.setDoInput(true);
             urlConnection.setDoOutput(true);
-            SendRequestAsync(xContent, content);
+            sendRequestAsync(xContent, content);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -185,10 +183,11 @@ public class PollTask {
      * Затем клиент  опять переводится в режим подготовки запроса
      * {@value} responseCode код возврата
      * {@value} response ответ сервера в виде строки
-     *
+     * @param xContent нода xml кода
+     * @param content байтовая строка для отправки
      * @see PollTask#handleResponse(int, String)
      */
-    private void SendRequestAsync(final Element xContent, final byte[] content) {
+    private void sendRequestAsync(final Element xContent, final byte[] content) {
         if (xContent != null) {
             handler.post(new Runnable() {
                 @Override
@@ -249,8 +248,7 @@ public class PollTask {
      *
      * @param responseCode код возврата
      * @param response     ответ сервера в виде строки
-     * @see PollTask#prepareRequest()
-     * @see PollTask#sendRequestAsync()
+     * @see PollTask#sendRequestAsync(Element, byte[])
      */
 
     private void handleResponse(final int responseCode, String response) {
