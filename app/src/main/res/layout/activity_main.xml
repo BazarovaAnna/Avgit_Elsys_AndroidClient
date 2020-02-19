@@ -9,6 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
+        android:onClick="onStartButtonClick"
         android:text="@string/start"
         android:layout_alignParentRight="true" />
 
@@ -17,20 +18,30 @@
         android:id="@+id/btnClick_imp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/impulse" />
+        android:text="@string/impulse"
+        android:onClick="onImpulseButtonClick"/>
 
     <Button
         android:id="@+id/btnClick_swoff"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnClick_imp"
-        android:text="@string/sw_off" />
+        android:text="@string/sw_off"
+        android:onClick="onSwoffButtonClick"/>
     <Button
         android:layout_below="@id/btnClick_swoff"
         android:id="@+id/btnClick_swon"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/sw_on" />
+        android:text="@string/sw_on"
+        android:onClick="onSwonButtonClick"/>
+
+    <Button
+        android:id="@+id/btnClick_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_swon"
+        android:text="Invert" />
 
     <TextView
         android:id="@+id/lbl_view"

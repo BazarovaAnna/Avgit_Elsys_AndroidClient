@@ -6,7 +6,10 @@ import android.util.Log;
 import org.w3c.dom.Element;
 
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.URL;
 import java.util.Date;
 
@@ -17,7 +20,7 @@ import java.util.Date;
  * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
-public class PollTask {
+public abstract class PollTask {
     /**
      * Поля, содержащие IP сервера и пароль для шифрования
      */
@@ -64,12 +67,6 @@ public class PollTask {
      */
     private int responseCode;
 
-
-    /**
-     * Поле - команда
-     */
-    Outs command;
-
     Handler handler;
 
     /**
@@ -80,23 +77,20 @@ public class PollTask {
      */
 
     boolean stopAsyncTask = false;
+    URL url;
 
-    public void start(String aServerIP, String aPassword) {
-        this.serverIP = aServerIP;
-        this.password = aPassword;
-        this.command = Outs.None;
-        response = null;
+    public PollTask() {
+        handler = new Handler();
+    }
 
+    public void start(String aServerIP, String aPassword) throws MalformedURLException {
+        serverIP = aServerIP;
+        password = aPassword;
         requestUri = String.format("http://%s%s", serverIP, Protocol.URL);
-
-        connection = false;
         CID = 10000;
         SID = 0;
         commandID = 10000;
-        terminated = false;
-
-        //SocketClient.chText("Начало опроса");
-        handler = new Handler();
+        url = new URL(String.format("http://%s%s", serverIP, Protocol.URL));
     }
 
     /**
@@ -139,7 +133,7 @@ public class PollTask {
      * @see Protocol#getDigest(String, String, byte[], String)
      * @see Protocol#DATE_FORMAT
      */
-    public synchronized void sendCommand(Outs command) {
+    public synchronized void sendCommand(Outs command) throws IOException {
         String nonce = Protocol.getNonce();
         Date now = new Date();
         Element xContent;
@@ -147,34 +141,28 @@ public class PollTask {
         String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
         if (Math.abs(timeCorrection) > 5) {
-            //SocketClient.chText("Синхронизация времени");
+            onMessage("Синхронизация времени");
             xContent = Protocol.getXContent(incCID(), SID, now);
         } else if (command != Outs.None) {
             xContent = makeCommand(command);
         } else {
             xContent = Protocol.getXContent(incCID(), SID);
         }
-        try {
-            content = Protocol.toString(xContent).getBytes("UTF8");
+        content = Protocol.toString(xContent).getBytes("UTF8");
 
-            String Digest = Protocol.getDigest(nonce, password, content, creationTime);
+        String Digest = Protocol.getDigest(nonce, password, content, creationTime);
 
-            URL url = new URL(String.format("http://%s%s", serverIP, Protocol.URL));
-            urlConnection = (HttpURLConnection) url.openConnection();
+        urlConnection.setRequestMethod("POST");
+        urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
+        urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
+        urlConnection.setRequestProperty("Connection", "close");
 
-            urlConnection.setRequestMethod("POST");
-            urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
-            urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
-            urlConnection.setRequestProperty("Connection", "close");
+        urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
-            urlConnection.setRequestProperty("Accept-Encoding", "identity");
-
-            urlConnection.setDoInput(true);
-            urlConnection.setDoOutput(true);
-            sendRequestAsync(xContent, content);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        urlConnection.setDoInput(true);
+        urlConnection.setDoOutput(true);
+        urlConnection = (HttpURLConnection) url.openConnection();
+        sendRequestAsync(xContent, content);
     }
 
     /**
@@ -183,19 +171,15 @@ public class PollTask {
      * Затем клиент  опять переводится в режим подготовки запроса
      * {@value} responseCode код возврата
      * {@value} response ответ сервера в виде строки
+     *
      * @param xContent нода xml кода
-     * @param content байтовая строка для отправки
+     * @param content  байтовая строка для отправки
      * @see PollTask#handleResponse(int, String)
      */
     private void sendRequestAsync(final Element xContent, final byte[] content) {
-        if (xContent != null) {
-            handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    //SocketClient.chText("Sending request");
-                }
-            });
-
+        if (xContent == null) {
+            //TODO find out what to do here
+            //19.02.2020 HukuToc2288
         }
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -213,14 +197,8 @@ public class PollTask {
                     urlConnection.disconnect();
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    handler.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            SocketClient.chText(e.getMessage());
-                            response = null;
-                        }
-                    });
-                    stopAsyncTask = true;
+                    //TODO process error
+                    //19.02.2020 HukuToc2288
                 }
                 handleResponse(responseCode, response);
             }
@@ -252,20 +230,20 @@ public class PollTask {
      */
 
     private void handleResponse(final int responseCode, String response) {
-        Log.d("Response", responseCode + ": " + response);
+        Log.d("Response", response + ": " + response);
         handler.post(new Runnable() {
             @Override
             public void run() {
                 MainActivity.codeText.setText(String.valueOf(responseCode));
                 if (responseCode == 401) {
                     stopAsyncTask = true;
-                    SocketClient.chText("Ошибка аутентификации");
-                }else if (responseCode == 200) {
-                    SocketClient.chText("OK");
-                }else if (responseCode == 0) {
-                    SocketClient.chText("Ошибка подключения");
+                    onError("Ошибка аутентификации");
                 }
             }
         });
     }
+
+    public abstract void onError(String message);
+
+    public abstract void onMessage(String message);
 }
