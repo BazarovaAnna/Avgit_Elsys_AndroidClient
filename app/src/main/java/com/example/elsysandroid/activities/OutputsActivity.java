@@ -26,7 +26,7 @@ public class OutputsActivity extends AppCompatActivity {
 
     public void onSwonButtonClick(View view) {
         try {
-            applicationComponent.getPollTask().sendCommand(Outs.SwitchOn);
+            applicationComponent.getPollTask().sendCommand(Outs.SwitchOn, controller.selectedDevice.getId());
         } catch (IOException e) {
             showToast(getString(R.string.cant_connect));
         }
@@ -34,7 +34,7 @@ public class OutputsActivity extends AppCompatActivity {
 
     public void onSwoffButtonClick(View view) {
         try {
-            applicationComponent.getPollTask().sendCommand(Outs.SwitchOff);
+            applicationComponent.getPollTask().sendCommand(Outs.SwitchOff, controller.selectedDevice.getId());
         } catch (IOException e) {
             showToast(getString(R.string.cant_connect));
         }
@@ -42,7 +42,7 @@ public class OutputsActivity extends AppCompatActivity {
 
     public void onImpulseButtonClick(View view) {
         try {
-            applicationComponent.getPollTask().sendCommand(Outs.Impulse);
+            applicationComponent.getPollTask().sendCommand(Outs.Impulse, controller.selectedDevice.getId());
         } catch (IOException e) {
             showToast(getString(R.string.cant_connect));
         }
@@ -50,7 +50,7 @@ public class OutputsActivity extends AppCompatActivity {
 
     public void onInvButtonClick(View view) {
         try {
-            applicationComponent.getPollTask().sendCommand(Outs.Invert);
+            applicationComponent.getPollTask().sendCommand(Outs.Invert, controller.selectedDevice.getId());
         } catch (IOException e) {
             showToast(getString(R.string.cant_connect));
         }

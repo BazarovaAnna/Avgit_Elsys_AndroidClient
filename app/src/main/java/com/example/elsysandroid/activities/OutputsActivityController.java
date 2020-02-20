@@ -20,6 +20,8 @@ public class OutputsActivityController {
     private Spinner outputsSpinner;
     private TextView selection;
 
+    public Device selectedDevice;
+
     public OutputsActivityController(DeviceList devicesList,
                                      Activity activity) {
         this.deviceList = devicesList;
@@ -39,6 +41,7 @@ public class OutputsActivityController {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position) + ", " + position;
                 selection.setText(item);
+                selectedDevice = deviceList.getOuts().get(position);
             }
 
             @Override

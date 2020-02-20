@@ -83,7 +83,7 @@ public class DevicesParser {
                                         currentDevice.setName(textValue);
                                         break;
                                     case "id":
-                                        currentDevice.setId(textValue);
+                                        currentDevice.setId(Integer.parseInt(textValue));
                                         break;
                                 }
                             }

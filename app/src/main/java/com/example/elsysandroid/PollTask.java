@@ -110,6 +110,9 @@ public abstract class PollTask {
         return commandID;
     }
 
+    public synchronized void sendCommand(Outs command) throws IOException {
+        sendCommand(command, 0);
+    }
 
     /**
      * Функция подготовки запроса
@@ -119,10 +122,13 @@ public abstract class PollTask {
      * {@value} XContent данные в формате xml
      * {@value} s строка, которую отправляем
      *
+     * @param command отправляемая команда
+     * @param deviceId идентификатор устройства.
+     *
      * @see Protocol#getDigest(String, String, byte[], String)
      * @see Protocol#DATE_FORMAT
      */
-    public synchronized void sendCommand(Outs command) throws IOException {
+    public synchronized void sendCommand(Outs command, int deviceId) throws IOException {
         String nonce = Protocol.getNonce();
         Date now = new Date();
         Element xContent;
@@ -131,7 +137,7 @@ public abstract class PollTask {
         String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
         if (command != Outs.None) {
-            xContent = makeCommand(command);
+            xContent = makeCommand(command, deviceId);
         } else {
             xContent = Protocol.getXContent(incCID(), SID);
         }
@@ -197,14 +203,14 @@ public abstract class PollTask {
      * @param aCommand команда, которую хотим отправить
      * @return возвращает сторку для отправления
      */
-    private Element makeCommand(Outs aCommand) {
+    private Element makeCommand(Outs aCommand, int deviceId) {
         if (aCommand == Outs.None) {
             return Protocol.getXContent(incCID(), SID);
         }
         if (aCommand == Outs.SyncTime) {
             return Protocol.getXContent(incCID(), SID, new Date());
         }
-        return Protocol.getXContent(incCID(), SID, Protocol.getCommand(8, aCommand.getDevType().getCode(), aCommand.getCode(), incCommandID()));
+        return Protocol.getXContent(incCID(), SID, Protocol.getCommand(deviceId, aCommand.getDevType().getCode(), aCommand.getCode(), incCommandID()));
     }
 
     /**
