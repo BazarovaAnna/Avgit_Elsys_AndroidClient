@@ -9,7 +9,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
+import java.net.NoRouteToHostException;
 import java.net.URL;
 import java.util.Date;
 
@@ -90,7 +90,7 @@ public abstract class PollTask {
         CID = 10000;
         SID = 0;
         commandID = 10000;
-        url = new URL(String.format("http://%s%s", serverIP, Protocol.URL));
+        url = new URL(String.format(requestUri));
     }
 
     /**
@@ -152,6 +152,8 @@ public abstract class PollTask {
 
         String Digest = Protocol.getDigest(nonce, password, content, creationTime);
 
+        urlConnection = (HttpURLConnection) url.openConnection();
+
         urlConnection.setRequestMethod("POST");
         urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
         urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
@@ -161,7 +163,6 @@ public abstract class PollTask {
 
         urlConnection.setDoInput(true);
         urlConnection.setDoOutput(true);
-        urlConnection = (HttpURLConnection) url.openConnection();
         sendRequestAsync(xContent, content);
     }
 
@@ -195,6 +196,9 @@ public abstract class PollTask {
                     response = urlConnection.getResponseMessage();
 
                     urlConnection.disconnect();
+                } catch (NoRouteToHostException e) {
+                    stopAsyncTask = true;
+                    onError("IP address unreachable");
                 } catch (final Exception e) {
                     e.printStackTrace();
                     //TODO process error

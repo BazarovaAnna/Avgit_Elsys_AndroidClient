@@ -1,5 +1,8 @@
 <resources>
     <string name="app_name">ElsysAndroid</string>
+    <string name="ip_malformed">Malformed IP address</string>
+    <string name="cant_connect">IP address unreachable</string>
+    <string name="need_auth">You are not authorized to do this</string>
     <string name="start">Start</string>
     <string name="impulse">Impulse</string>
     <string name="sw_off">Switch OFF</string>
