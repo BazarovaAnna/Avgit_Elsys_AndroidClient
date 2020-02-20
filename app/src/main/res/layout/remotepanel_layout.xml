@@ -224,14 +224,31 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="3">
+            android:layout_weight="3"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/sync_button"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Синхронизация"
+                android:layout_weight="3"
+                android:layout_margin="5dp"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="#7b7b7b"
+                />
 
             <TextView
                 android:id="@+id/logTextView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Логи"
-                android:textSize="20sp">
+                android:textSize="20sp"
+                android:layout_weight="1">
 
             </TextView>
 

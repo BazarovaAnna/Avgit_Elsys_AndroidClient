@@ -5,10 +5,12 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.elsysandroid.App;
+import com.example.elsysandroid.Outs;
 import com.example.elsysandroid.R;
 import com.example.elsysandroid.devices.Device;
 import com.example.elsysandroid.devices.DeviceList;
@@ -16,9 +18,11 @@ import com.example.elsysandroid.devices.DevicesParser;
 
 import org.xmlpull.v1.XmlPullParser;
 
+import java.io.IOException;
+
 public class RemotePanelActivity extends AppCompatActivity {
 
-    private Button backButton, goToMainButton, outputsButton;
+    private Button backButton, goToMainButton, outputsButton, syncButton;
     private Intent backIntent, outputsIntent;
     private MainApplicationComponent applicationComponent;
     private DevicesParser devicesParser;
@@ -46,6 +50,13 @@ public class RemotePanelActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 onClickOutputsButton();
+            }
+        });
+        syncButton = findViewById(R.id.sync_button);
+        syncButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onSyncButton();
             }
         });
         devicesParser = applicationComponent.getDevicesParser();
@@ -79,5 +90,14 @@ public class RemotePanelActivity extends AppCompatActivity {
     protected void onClickOutputsButton() {
         outputsIntent = new Intent(this, OutputsActivity.class);
         startActivity(outputsIntent);
+    }
+
+    protected void onSyncButton() {
+        try {
+            applicationComponent.getPollTask().sendCommand(Outs.SyncTime);
+        } catch (IOException e) {
+            Toast.makeText(getApplicationContext(), getString(R.string.cant_connect), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
+        }
     }
 }
