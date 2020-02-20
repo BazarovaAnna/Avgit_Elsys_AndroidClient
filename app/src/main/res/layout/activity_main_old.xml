@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Button
+        android:layout_below="@id/passwordText"
+        android:id="@+id/btnClick_view"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:onClick="onStartButtonClick"
+        android:text="@string/start"
+        android:layout_alignParentRight="true" />
+
+    <Button
+        android:layout_below="@id/btnClick_view"
+        android:id="@+id/btnClick_imp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/impulse"
+        android:onClick="onImpulseButtonClick"/>
+
+    <Button
+        android:id="@+id/btnClick_swoff"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_imp"
+        android:text="@string/sw_off"
+        android:onClick="onSwoffButtonClick"/>
+    <Button
+        android:layout_below="@id/btnClick_swoff"
+        android:id="@+id/btnClick_swon"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/sw_on"
+        android:onClick="onSwonButtonClick"/>
+
+    <Button
+        android:id="@+id/btnClick_inv"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_swon"
+        android:text="@string/invert"
+        android:onClick="onInvButtonClick"/>
+
+    <Button
+        android:id="@+id/btnClick_sync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_inv"
+        android:text="@string/sync"
+        android:onClick="onSyncButtonClick" />
+
+    <TextView
+        android:id="@+id/lbl_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:text="@string/msg" />
+
+    <TextView
+        android:gravity="center"
+        android:id="@+id/code_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:layout_above="@id/lbl_view"
+        android:text="@string/code"
+        android:textColor="#000"
+        android:textSize="16sp" />
+
+
+    <TextView
+        android:layout_alignBottom="@+id/addressText"
+        android:layout_alignTop="@id/addressText"
+        android:layout_alignRight="@id/textView2"
+        android:layout_alignParentLeft="true"
+        android:gravity="center_vertical"
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/addr" />
+
+    <EditText
+        android:id="@+id/addressText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/textView"
+        android:layout_toRightOf="@+id/textView"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="@string/default_ip" />
+    <TextView
+        android:layout_below="@+id/textView"
+        android:gravity="center_vertical"
+        android:layout_alignBottom="@+id/passwordText"
+        android:layout_alignTop="@id/passwordText"
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/passwd" />
+
+    <EditText
+        android:layout_below="@id/addressText"
+        android:id="@+id/passwordText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_toEndOf="@+id/textView2"
+        android:layout_toRightOf="@+id/textView2"
+        android:ems="10"
+        android:text="@string/default_password" />
+</RelativeLayout>

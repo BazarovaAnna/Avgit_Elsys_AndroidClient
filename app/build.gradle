@@ -28,6 +28,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'commons-codec:commons-codec:1.14'
     implementation 'com.loopj.android:android-async-http:1.4.5'
+    compile 'com.google.dagger:dagger:2.7'
+    annotationProcessor 'com.google.dagger:dagger-compiler:2.7'
     //implementation group: 'org.jboss.jbossas', name: 'jboss-as-jbossmq', version: '5.0.0.CR2'
-
 }

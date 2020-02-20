@@ -1,4 +1,4 @@
-package com.example.elsysandroid;
+package com.example.elsysandroid.activities;
 
 import android.os.Bundle;
 import android.view.View;
@@ -7,6 +7,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.elsysandroid.Outs;
+import com.example.elsysandroid.PollTask;
+import com.example.elsysandroid.R;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -17,7 +21,7 @@ import java.net.MalformedURLException;
  * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivityOld extends AppCompatActivity {
 
     public static TextView codeText;
     private PollTask pollTask;
@@ -34,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main_old);
         final TextView textV = (TextView) findViewById(R.id.lbl_view);
         codeText = findViewById(R.id.code_view);
         addressText = findViewById(R.id.addressText);

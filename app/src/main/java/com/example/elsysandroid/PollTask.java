@@ -234,7 +234,7 @@ public abstract class PollTask {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
-                MainActivity.codeText.setText(String.valueOf(responseCode));
+                //MainActivity.codeText.setText(String.valueOf(responseCode));
                 if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     onError("Ошибка аутентификации");
                 }
