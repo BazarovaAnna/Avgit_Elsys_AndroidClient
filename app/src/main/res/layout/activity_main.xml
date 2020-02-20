@@ -43,6 +43,14 @@
         android:layout_below="@id/btnClick_swon"
         android:text="Invert" />
 
+    <Button
+        android:id="@+id/btnClick_sync"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnClick_inv"
+        android:text="@string/sync"
+        android:onClick="onSyncButtonClick" />
+
     <TextView
         android:id="@+id/lbl_view"
         android:layout_width="wrap_content"

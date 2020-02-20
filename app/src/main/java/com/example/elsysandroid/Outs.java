@@ -15,7 +15,9 @@ public enum Outs {
     /** Переключить */
     Invert(DevType.Out,3),
     /** Нет команды*/
-    None(DevType.None,10000);
+    None(DevType.None,10000),
+    /** Синхронизация времени*/
+    SyncTime(DevType.None, 10001);
     /**
      * Поле - код состояния
      */

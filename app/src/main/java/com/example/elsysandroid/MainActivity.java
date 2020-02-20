@@ -1,14 +1,12 @@
 package com.example.elsysandroid;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -104,6 +102,14 @@ public class MainActivity extends AppCompatActivity {
         }
         try {
             pollTask.sendCommand(Outs.SwitchOff);
+        } catch (IOException e) {
+            showToast(getString(R.string.cant_connect));
+        }
+    }
+
+    public void onSyncButtonClick(View view) {
+        try {
+            pollTask.sendCommand(Outs.SyncTime);
         } catch (IOException e) {
             showToast(getString(R.string.cant_connect));
         }

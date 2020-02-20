@@ -14,6 +14,7 @@
     <string name="default_ip">192.168.1.21</string>
     <string name="default_password">12345678</string>
     <string name="passwd">Password</string>
+    <string name="sync">Sync</string>
 </resources>
 
 

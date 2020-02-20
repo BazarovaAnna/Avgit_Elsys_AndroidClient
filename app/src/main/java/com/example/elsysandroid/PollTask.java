@@ -9,7 +9,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.NoRouteToHostException;
 import java.net.URL;
 import java.util.Date;
 
@@ -51,21 +50,9 @@ public abstract class PollTask {
     String requestUri;
 
     /**
-     * Поле - Http соединение с сервером
-     */
-    HttpURLConnection urlConnection;
-    /**
      * Поле для корректирования локального времени под серверное
      */
     long timeCorrection;
-    /**
-     * Поле - ответ сервера в виде строки
-     */
-    private String response;
-    /**
-     * Поле - код возврата (200 - ок)
-     */
-    private int responseCode;
 
     Handler handler;
 
@@ -76,7 +63,6 @@ public abstract class PollTask {
      * @param aPassword пароль для шифрования данных
      */
 
-    boolean stopAsyncTask = false;
     URL url;
 
     public PollTask() {
@@ -137,13 +123,11 @@ public abstract class PollTask {
         String nonce = Protocol.getNonce();
         Date now = new Date();
         Element xContent;
+        HttpURLConnection urlConnection;
 
         String creationTime = Protocol.DATE_FORMAT.format(new Date(now.getTime() + timeCorrection));
 
-        if (Math.abs(timeCorrection) > 5) {
-            onMessage("Синхронизация времени");
-            xContent = Protocol.getXContent(incCID(), SID, now);
-        } else if (command != Outs.None) {
+        if (command != Outs.None) {
             xContent = makeCommand(command);
         } else {
             xContent = Protocol.getXContent(incCID(), SID);
@@ -163,7 +147,7 @@ public abstract class PollTask {
 
         urlConnection.setDoInput(true);
         urlConnection.setDoOutput(true);
-        sendRequestAsync(xContent, content);
+        sendRequestAsync(urlConnection, xContent, content);
     }
 
     /**
@@ -173,11 +157,12 @@ public abstract class PollTask {
      * {@value} responseCode код возврата
      * {@value} response ответ сервера в виде строки
      *
+     * @param urlConnection HTTP соединение с сервером
      * @param xContent нода xml кода
      * @param content  байтовая строка для отправки
-     * @see PollTask#handleResponse(int, String)
+     * @see PollTask#handleResponse(HttpURLConnection)
      */
-    private void sendRequestAsync(final Element xContent, final byte[] content) {
+    private void sendRequestAsync(final HttpURLConnection urlConnection, final Element xContent, final byte[] content) {
         if (xContent == null) {
             //TODO find out what to do here
             //19.02.2020 HukuToc2288
@@ -192,19 +177,12 @@ public abstract class PollTask {
                     dataOutputStream.flush();
                     dataOutputStream.close();
 
-                    responseCode = urlConnection.getResponseCode();
-                    response = urlConnection.getResponseMessage();
-
-                    urlConnection.disconnect();
-                } catch (NoRouteToHostException e) {
-                    stopAsyncTask = true;
-                    onError("IP address unreachable");
                 } catch (final Exception e) {
                     e.printStackTrace();
                     //TODO process error
                     //19.02.2020 HukuToc2288
                 }
-                handleResponse(responseCode, response);
+                handleResponse(urlConnection);
             }
         });
         thread.start();
@@ -220,29 +198,45 @@ public abstract class PollTask {
         if (aCommand == Outs.None) {
             return Protocol.getXContent(incCID(), SID);
         }
+        if (aCommand == Outs.SyncTime) {
+            return Protocol.getXContent(incCID(), SID, new Date());
+        }
         return Protocol.getXContent(incCID(), SID, Protocol.getCommand(8, aCommand.getDevType().getCode(), aCommand.getCode(), incCommandID()));
     }
-
 
     /**
      * Функция парсит ответ сервера из строки в структуру для обработки,
      * затем в зависимости от результата обработки задает параметры для формирования нового запроса
      *
-     * @param responseCode код возврата
-     * @param response     ответ сервера в виде строки
-     * @see PollTask#sendRequestAsync(Element, byte[])
+     * @param urlConnection HTTP соединение с сервером
+     * @see PollTask#sendRequestAsync(HttpURLConnection, Element, byte[])
      */
-
-    private void handleResponse(final int responseCode, String response) {
-        Log.d("Response", response + ": " + response);
+    private void handleResponse(final HttpURLConnection urlConnection) {
+        try {
+            Log.d("Response", urlConnection.getResponseCode() + ": " + urlConnection.getResponseMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         handler.post(new Runnable() {
             @Override
             public void run() {
+
+                if (urlConnection.getDate() != 0) {
+                    timeCorrection = urlConnection.getDate() - new Date().getTime();
+                }
+
+                int responseCode = 0;
+                try {
+                    responseCode = urlConnection.getResponseCode();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 MainActivity.codeText.setText(String.valueOf(responseCode));
                 if (responseCode == 401) {
-                    stopAsyncTask = true;
                     onError("Ошибка аутентификации");
                 }
+
+                urlConnection.disconnect();
             }
         });
     }
