@@ -56,6 +56,8 @@ public abstract class PollTask {
 
     Handler handler;
 
+    ResponseHandler responseHandler;
+
     /**
      * Функция, инициализирующая обмен с сервером и задающая базовые значения
      *
@@ -67,6 +69,7 @@ public abstract class PollTask {
 
     public PollTask() {
         handler = new Handler();
+        responseHandler = new ResponseHandler(this);
     }
 
     public void start(String aServerIP, String aPassword) throws MalformedURLException {
@@ -232,8 +235,16 @@ public abstract class PollTask {
                     e.printStackTrace();
                 }
                 MainActivity.codeText.setText(String.valueOf(responseCode));
-                if (responseCode == 401) {
+                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
                     onError("Ошибка аутентификации");
+                }
+
+                if (responseCode == HttpURLConnection.HTTP_OK) {
+                    try {
+                        responseHandler.Handle(urlConnection.getInputStream());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
                 urlConnection.disconnect();

@@ -41,7 +41,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnClick_swon"
-        android:text="Invert" />
+        android:text="@string/invert"
+        android:onClick="onInvButtonClick"/>
 
     <Button
         android:id="@+id/btnClick_sync"

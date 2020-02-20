@@ -118,4 +118,16 @@ public class MainActivity extends AppCompatActivity {
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
     }
+
+    public void onInvButtonClick(View view) {
+        if (!started) {
+            showToast(getString(R.string.need_auth));
+            return;
+        }
+        try {
+            pollTask.sendCommand(Outs.Invert);
+        } catch (IOException e) {
+            showToast(getString(R.string.cant_connect));
+        }
+    }
 }
