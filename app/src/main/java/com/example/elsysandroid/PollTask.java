@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Date;
 
 
@@ -19,7 +20,7 @@ import java.util.Date;
  * @author ITMO students Bazarova Anna, Denisenko Kirill, Ryabov Sergey, Chernyshev Nikita
  * @version 1.0
  */
-public abstract class PollTask {
+public class PollTask {
     /**
      * Поля, содержащие IP сервера и пароль для шифрования
      */
@@ -67,9 +68,12 @@ public abstract class PollTask {
 
     URL url;
 
+    private ArrayList<PollTaskListener> listeners;
+
     public PollTask() {
         handler = new Handler();
         responseHandler = new ResponseHandler(this);
+        listeners = new ArrayList<PollTaskListener>();
     }
 
     public void start(String aServerIP, String aPassword) throws MalformedURLException {
@@ -110,7 +114,7 @@ public abstract class PollTask {
         return commandID;
     }
 
-    public synchronized void sendCommand(Outs command) throws IOException {
+    public synchronized void sendCommand(Outs command) {
         sendCommand(command, 0);
     }
 
@@ -128,7 +132,7 @@ public abstract class PollTask {
      * @see Protocol#getDigest(String, String, byte[], String)
      * @see Protocol#DATE_FORMAT
      */
-    public synchronized void sendCommand(Outs command, int deviceId) throws IOException {
+    public synchronized void sendCommand(Outs command, int deviceId) {
         String nonce = Protocol.getNonce();
         Date now = new Date();
         Element xContent;
@@ -141,22 +145,26 @@ public abstract class PollTask {
         } else {
             xContent = Protocol.getXContent(incCID(), SID);
         }
-        content = Protocol.toString(xContent).getBytes("UTF8");
 
-        String Digest = Protocol.getDigest(nonce, password, content, creationTime);
+        try {
+            content = Protocol.toString(xContent).getBytes("UTF8");
+            String Digest = Protocol.getDigest(nonce, password, content, creationTime);
+            urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setConnectTimeout(5000); //set timeout to 5 seconds
 
-        urlConnection = (HttpURLConnection) url.openConnection();
+            urlConnection.setRequestMethod("POST");
+            urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
+            urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
+            urlConnection.setRequestProperty("Connection", "close");
 
-        urlConnection.setRequestMethod("POST");
-        urlConnection.setRequestProperty("ECNC-Auth", String.format("Nonce=\"%s\", Created=\"%s\", Digest=\"%s\"", nonce, creationTime, Digest));
-        urlConnection.setRequestProperty("Date", Protocol.LOCAL_DATE_FORMAT.format(now));
-        urlConnection.setRequestProperty("Connection", "close");
+            urlConnection.setRequestProperty("Accept-Encoding", "identity");
 
-        urlConnection.setRequestProperty("Accept-Encoding", "identity");
-
-        urlConnection.setDoInput(true);
-        urlConnection.setDoOutput(true);
-        sendRequestAsync(urlConnection, xContent, content);
+            urlConnection.setDoInput(true);
+            urlConnection.setDoOutput(true);
+            sendRequestAsync(urlConnection, xContent, content);
+        }catch (IOException e){
+            onErrorHandler(e.toString());
+        }
     }
 
     /**
@@ -185,13 +193,13 @@ public abstract class PollTask {
 
                     dataOutputStream.flush();
                     dataOutputStream.close();
-
+                    handleResponse(urlConnection);
+                    urlConnection.disconnect();
+                    onMessageHandler("success");
                 } catch (final Exception e) {
                     e.printStackTrace();
-                    //TODO process error
-                    //19.02.2020 HukuToc2288
+                    onErrorHandler(e.toString());
                 }
-                handleResponse(urlConnection);
             }
         });
         thread.start();
@@ -226,39 +234,59 @@ public abstract class PollTask {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        if (urlConnection.getDate() != 0) {
+            timeCorrection = urlConnection.getDate() - new Date().getTime();
+        }
+
+        int responseCode = 0;
+        try {
+            responseCode = urlConnection.getResponseCode();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //MainActivity.codeText.setText(String.valueOf(responseCode));
+        if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
+            onErrorHandler("Ошибка аутентификации");
+        }
+
+        if (responseCode == HttpURLConnection.HTTP_OK) {
+            try {
+                responseHandler.Handle(urlConnection.getInputStream());
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        urlConnection.disconnect();
+    }
+
+    //this to methods to execute not from the main thread
+    //HukuToc2288 19.02.2020
+    private void onErrorHandler(final String message) {
         handler.post(new Runnable() {
             @Override
             public void run() {
-
-                if (urlConnection.getDate() != 0) {
-                    timeCorrection = urlConnection.getDate() - new Date().getTime();
-                }
-
-                int responseCode = 0;
-                try {
-                    responseCode = urlConnection.getResponseCode();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                //MainActivity.codeText.setText(String.valueOf(responseCode));
-                if (responseCode == HttpURLConnection.HTTP_UNAUTHORIZED) {
-                    onError("Ошибка аутентификации");
-                }
-
-                if (responseCode == HttpURLConnection.HTTP_OK) {
-                    try {
-                        responseHandler.Handle(urlConnection.getInputStream());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-
-                urlConnection.disconnect();
+                for (PollTaskListener listener: listeners)
+                    listener.onError(message);
             }
         });
     }
 
-    public abstract void onError(String message);
+    private void onMessageHandler(final String message) {
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                for (PollTaskListener listener: listeners)
+                    listener.onMessage(message);
+            }
+        });
+    }
 
-    public abstract void onMessage(String message);
+    public void addPollTaskListener(PollTaskListener listener){
+        listeners.add(listener);
+    }
+
+    public void removePollTaskListener(PollTaskListener listener){
+        listeners.remove(listener);
+    }
 }

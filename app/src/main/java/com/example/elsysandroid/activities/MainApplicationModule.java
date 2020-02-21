@@ -1,5 +1,7 @@
 package com.example.elsysandroid.activities;
 
+import android.widget.Toast;
+
 import com.example.elsysandroid.PollTask;
 import com.example.elsysandroid.devices.Device;
 import com.example.elsysandroid.devices.DeviceList;
@@ -25,16 +27,6 @@ public class MainApplicationModule {
     @Singleton
     @Provides
     PollTask pollTask() {
-        return new PollTask() {
-            @Override
-            public void onError(String message) {
-
-            }
-
-            @Override
-            public void onMessage(String message) {
-
-            }
-        };
+        return new PollTask();
     }
 }

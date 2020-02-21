@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.elsysandroid.App;
 import com.example.elsysandroid.Outs;
+import com.example.elsysandroid.PollTaskListener;
 import com.example.elsysandroid.R;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText addressText;
     private EditText passwordText;
     private MainApplicationComponent applicationComponent;
+    PollTaskListener listener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,6 +29,22 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.login_layout);
         addressText = findViewById(R.id.edit_user);
         passwordText = findViewById(R.id.edit_password);
+        listener = new PollTaskListener() {
+            @Override
+            public void onError(String message) {
+                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onMessage(String message) {
+                if (message.equals("success")){
+                    applicationComponent.getPollTask().removePollTaskListener(listener);
+                    Intent success = new Intent(LoginActivity.this, RemotePanelActivity.class);
+                    startActivity(success);
+                }
+            }
+        };
+        applicationComponent.getPollTask().addPollTaskListener(listener);
     }
 
     public void login(View view) {
@@ -38,15 +56,7 @@ public class LoginActivity extends AppCompatActivity {
             e.printStackTrace();
             return;
         }
-        try {
-            applicationComponent.getPollTask().sendCommand(Outs.None);
+        applicationComponent.getPollTask().sendCommand(Outs.None);
             //todo Проверка данных
-
-            Intent success = new Intent(this, RemotePanelActivity.class);
-            startActivity(success);
-
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), getString(R.string.cant_connect), Toast.LENGTH_SHORT).show();
-        }
     }
 }

@@ -61,6 +61,7 @@ public class RemotePanelActivity extends AppCompatActivity {
         });
         devicesParser = applicationComponent.getDevicesParser();
         deviceList = applicationComponent.getDeviceList();
+        onClickGoToMainButton();
     }
 
     protected void onClickGoToMainButton() {
@@ -82,9 +83,7 @@ public class RemotePanelActivity extends AppCompatActivity {
     }
 
     protected void onClickBackButton() {
-        backIntent = new Intent(this, LoginActivity.class);
-        startActivity(backIntent);
-        onDestroy();
+        onBackPressed();
     }
 
     protected void onClickOutputsButton() {
@@ -93,11 +92,6 @@ public class RemotePanelActivity extends AppCompatActivity {
     }
 
     protected void onSyncButton() {
-        try {
-            applicationComponent.getPollTask().sendCommand(Outs.SyncTime);
-        } catch (IOException e) {
-            Toast.makeText(getApplicationContext(), getString(R.string.cant_connect), Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-        }
+        applicationComponent.getPollTask().sendCommand(Outs.SyncTime);
     }
 }
