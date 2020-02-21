@@ -37,7 +37,7 @@ public class OutputsActivity extends AppCompatActivity {
                     showToast(getString(R.string.done));
             }
         };
-        applicationComponent.getPollTask().addPollTaskListener(listener);
+        applicationComponent.getPollTask().setPollTaskListener(listener);
     }
 
     public void onSwonButtonClick(View view) {
@@ -58,11 +58,5 @@ public class OutputsActivity extends AppCompatActivity {
 
     public void showToast(String message) {
         Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
-    }
-
-    @Override
-    protected void onDestroy() {
-        applicationComponent.getPollTask().removePollTaskListener(listener);
-        super.onDestroy();
     }
 }

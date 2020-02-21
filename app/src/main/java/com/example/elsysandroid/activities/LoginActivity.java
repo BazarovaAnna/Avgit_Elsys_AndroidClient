@@ -38,13 +38,12 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onMessage(String message) {
                 if (message.equals("success")){
-                    applicationComponent.getPollTask().removePollTaskListener(listener);
                     Intent success = new Intent(LoginActivity.this, RemotePanelActivity.class);
                     startActivity(success);
                 }
             }
         };
-        applicationComponent.getPollTask().addPollTaskListener(listener);
+        applicationComponent.getPollTask().setPollTaskListener(listener);
     }
 
     public void login(View view) {

@@ -68,12 +68,11 @@ public class PollTask {
 
     URL url;
 
-    private ArrayList<PollTaskListener> listeners;
+    private PollTaskListener listener;
 
     public PollTask() {
         handler = new Handler();
         responseHandler = new ResponseHandler(this);
-        listeners = new ArrayList<PollTaskListener>();
     }
 
     public void start(String aServerIP, String aPassword) throws MalformedURLException {
@@ -266,8 +265,7 @@ public class PollTask {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                for (PollTaskListener listener: listeners)
-                    listener.onError(message);
+                listener.onError(message);
             }
         });
     }
@@ -276,17 +274,12 @@ public class PollTask {
         handler.post(new Runnable() {
             @Override
             public void run() {
-                for (PollTaskListener listener: listeners)
-                    listener.onMessage(message);
+                listener.onMessage(message);
             }
         });
     }
 
-    public void addPollTaskListener(PollTaskListener listener){
-        listeners.add(listener);
-    }
-
-    public void removePollTaskListener(PollTaskListener listener){
-        listeners.remove(listener);
+    public void setPollTaskListener(PollTaskListener listener){
+        this.listener = listener;
     }
 }
